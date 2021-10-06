@@ -9,10 +9,12 @@
 #include <QDir>
 #include <QDirIterator>
 
-class Pic
+class Pic: public QObject
 {
+    Q_OBJECT
+
 public:
-    Pic(const QString &filenameParam);
+    Pic(QObject *_mainwPtr, const QString &filenameParam);
     void run();
 
     QString filename;
@@ -22,6 +24,9 @@ public:
 
 private slots:
     void findFrame();
+
+signals:
+    void add_this_image(Pic*add_me);
 };
 
 #endif // PIC_H

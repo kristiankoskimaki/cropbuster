@@ -51,8 +51,11 @@ void MainWindow::find_images_with_borders() {
         return;
 
     for(const auto &filename : images_found) {
-        auto *picture = new Pic(filename);
+        auto *picture = new Pic(this, filename);
         picture->run();
-        images_with_borders << picture;
     }
+}
+
+void MainWindow::add_image_with_borders(Pic *add_me) {
+    images_with_borders << add_me;
 }

@@ -23,6 +23,7 @@ private slots:
     void on_scan_folders_clicked();
     void add_images_from(QDir &dir);
     void find_images_with_borders();
+    void add_image_with_borders(Pic *add_me);
 
 private:
     Ui::MainWindow *ui;
