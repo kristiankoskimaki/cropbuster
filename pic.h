@@ -5,11 +5,13 @@
 #include <QImage>
 #include <QSize>
 #include <QPoint>
+#include <QFileInfo>
 
-class pic
+class Pic
 {
 public:
-    pic();
+    Pic(const QString &filenameParam);
+    void run();
 
     QString filename;
     QImage thumb;
@@ -17,7 +19,7 @@ public:
     QPoint origin = {0, 0};
 
 private slots:
-    void findFrame(const QString &filename);
+    void findFrame();
 };
 
 #endif // PIC_H
