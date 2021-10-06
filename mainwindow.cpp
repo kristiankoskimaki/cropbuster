@@ -13,8 +13,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_scan_folders_clicked()
-{
+void MainWindow::on_scan_folders_clicked() {
     const QStringList folders = ui->folders_box->text().remove(QStringLiteral("\"")).split(QStringLiteral(";"));
     images_found.clear();   //new search, clear old results
 
@@ -25,6 +24,8 @@ void MainWindow::on_scan_folders_clicked()
         if(dir.exists())
             add_images_from(dir);
     }
+
+    find_images_with_borders();
 }
 
 void MainWindow::add_images_from(QDir &dir) {
@@ -41,9 +42,17 @@ void MainWindow::add_images_from(QDir &dir) {
                 break;
             }
         if(!duplicate)
-        {
             images_found << filename;
-            qDebug() << filename;
-        }
+    }
+}
+
+void MainWindow::find_images_with_borders() {
+    if(images_found.isEmpty())
+        return;
+
+    for(const auto &filename : images_found) {
+        auto *picture = new Pic(filename);
+        picture->run();
+        images_with_borders << picture;
     }
 }
