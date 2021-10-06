@@ -6,6 +6,8 @@
 #include <QSize>
 #include <QPoint>
 #include <QFileInfo>
+#include <QDir>
+#include <QDirIterator>
 
 class Pic
 {

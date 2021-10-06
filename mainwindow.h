@@ -16,8 +16,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    QStringList images_found;
+
 private slots:
     void on_scan_folders_clicked();
+    void add_images_from(QDir &dir);
 
 private:
     Ui::MainWindow *ui;
