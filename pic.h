@@ -1,12 +1,7 @@
 #ifndef PIC_H
 #define PIC_H
 
-#include <QString>
 #include <QImage>
-#include <QSize>
-#include <QPoint>
-#include <QFileInfo>
-#include <QDir>
 #include <QDirIterator>
 
 class Pic: public QObject
