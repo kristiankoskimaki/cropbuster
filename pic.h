@@ -1,10 +1,11 @@
 #ifndef PIC_H
 #define PIC_H
 
+#include <QRunnable>
 #include <QImage>
 #include <QDirIterator>
 
-class Pic: public QObject
+class Pic: public QObject, public QRunnable
 {
     Q_OBJECT
 

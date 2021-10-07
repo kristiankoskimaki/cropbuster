@@ -1,3 +1,4 @@
+#include <QThreadPool>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -50,10 +51,17 @@ void MainWindow::find_images_with_borders() {
     if(images_found.isEmpty())
         return;
 
+    QThreadPool thread_pool;
     for(const auto &filename : images_found) {
         auto *picture = new Pic(this, filename);
-        picture->run();
+        picture->setAutoDelete(false);
+        thread_pool.start(picture);
+
+        while(thread_pool.activeThreadCount() == thread_pool.maxThreadCount())
+            QApplication::processEvents();          //avoid blocking signals in event loop
     }
+    thread_pool.waitForDone();
+        QApplication::processEvents();              //process signals from last threads
 }
 
 void MainWindow::add_image_with_borders(Pic *add_me) {
