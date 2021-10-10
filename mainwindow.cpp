@@ -30,7 +30,7 @@ void MainWindow::on_scan_folders_clicked() {
 }
 
 void MainWindow::add_images_from(QDir &dir) {
-    dir.setNameFilters(QStringList( { "*.jpg", "*.webp", "*.png" } ));
+    dir.setNameFilters(QStringList( { "*.jpg", "*.jpeg" } ));
     QDirIterator iter(dir, QDirIterator::Subdirectories);
     while(iter.hasNext()) {
         const QFile file(iter.next());
