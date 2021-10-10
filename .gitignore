@@ -1,2 +1,4 @@
 Cropbuster.pro.user
 *.autosave
+bin/
+opencv2/

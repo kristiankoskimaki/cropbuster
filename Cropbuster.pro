@@ -20,6 +20,11 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
+LIBS += \
+    $$PWD/bin/libopencv_core452.dll \
+    $$PWD/bin/libopencv_imgcodecs452.dll \
+    $$PWD/bin/libopencv_imgproc452.dll
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

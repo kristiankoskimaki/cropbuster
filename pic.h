@@ -1,6 +1,7 @@
 #ifndef PIC_H
 #define PIC_H
 
+#include <opencv2/opencv.hpp>
 #include <QRunnable>
 #include <QImage>
 #include <QDirIterator>
@@ -19,7 +20,7 @@ public:
     QPoint origin = {0, 0};
 
 private slots:
-    void findFrame();
+    bool findFrame();
 
 signals:
     void add_this_image(Pic*add_me);
