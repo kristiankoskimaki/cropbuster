@@ -21,6 +21,7 @@ public:
     QVector<Pic *> images_with_borders;
 
 private slots:
+    void on_folders_box_returnPressed();
     void on_scan_folders_clicked();
     void add_images_from(QDir &dir);
     void find_images_with_borders();

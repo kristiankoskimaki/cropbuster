@@ -5,6 +5,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    ui->folders_box->setFocus();
     QTableWidget *table = ui->images_table;
     table->insertColumn(0);
     table->setHorizontalHeaderLabels( QStringList( "Images" ));
@@ -13,6 +14,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_folders_box_returnPressed() {
+    ui->scan_folders->click();
 }
 
 void MainWindow::on_scan_folders_clicked() {
@@ -84,4 +89,3 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
     QLabel *label = ui->img_label;
     label->setPixmap(QPixmap::fromImage(image).scaled(label->width(), label->height(), Qt::KeepAspectRatio));
 }
-
