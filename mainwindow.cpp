@@ -1,4 +1,3 @@
-#include <QThreadPool>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -24,23 +23,28 @@ void MainWindow::on_scan_folders_clicked() {
     const QStringList folders = ui->folders_box->text().remove(QStringLiteral("\"")).split(QStringLiteral(";"));
     images_found.clear();   //new search, clear old results
 
+    QThreadPool pool;
+
     for(auto &directory : folders) {
         QDir dir = directory;
         if(dir.isEmpty())
             continue;
         if(dir.exists())
-            add_images_from(dir);
+            add_images_from(dir, pool);
     }
-
-    find_images_with_borders();
+    pool.waitForDone();
+    QApplication::processEvents();              //process signals from last threads
+    ui->statusbar->clearMessage();
 }
 
-void MainWindow::add_images_from(QDir &dir) {
+void MainWindow::add_images_from(QDir &dir, QThreadPool &thread_pool) {
     dir.setNameFilters(QStringList( { "*.jpg", "*.jpeg" } ));
     QDirIterator iter(dir, QDirIterator::Subdirectories);
     while(iter.hasNext()) {
         const QFile file(iter.next());
         const QString filename = file.fileName();
+        ui->statusbar->showMessage(filename);
+        ui->statusbar->repaint();
 
         bool duplicate = false;                 //don't add same file many times
         for(const auto &alreadyAddedFile : images_found)
@@ -48,26 +52,14 @@ void MainWindow::add_images_from(QDir &dir) {
                 duplicate = true;
                 break;
             }
-        if(!duplicate)
-            images_found << filename;
+        if(!duplicate) {
+            Pic *picture = new Pic(this, filename);
+            picture->setAutoDelete(false);
+            thread_pool.start(picture);
+            while(thread_pool.activeThreadCount() == thread_pool.maxThreadCount())
+                QApplication::processEvents();          //avoid blocking signals in event loop
+        }
     }
-}
-
-void MainWindow::find_images_with_borders() {
-    if(images_found.isEmpty())
-        return;
-
-    QThreadPool thread_pool;
-    for(const auto &filename : images_found) {
-        auto *picture = new Pic(this, filename);
-        picture->setAutoDelete(false);
-        thread_pool.start(picture);
-
-        while(thread_pool.activeThreadCount() == thread_pool.maxThreadCount())
-            QApplication::processEvents();          //avoid blocking signals in event loop
-    }
-    thread_pool.waitForDone();
-        QApplication::processEvents();              //process signals from last threads
 }
 
 void MainWindow::add_image_with_borders(Pic *add_me) {

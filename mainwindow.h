@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTableWidgetItem>
+#include <QThreadPool>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,8 +24,7 @@ public:
 private slots:
     void on_folders_box_returnPressed();
     void on_scan_folders_clicked();
-    void add_images_from(QDir &dir);
-    void find_images_with_borders();
+    void add_images_from(QDir &dir, QThreadPool &thread_pool);
     void add_image_with_borders(Pic *add_me);
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
 
