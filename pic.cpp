@@ -15,7 +15,10 @@ void Pic::run()
 
 bool Pic::findFrame() {
     using namespace cv;
+
     Mat clear_image, sans_frame, gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
+    if(!gray_image.dims)
+        return false;
 
     threshold(gray_image, sans_frame, 249, 0, THRESH_TOZERO_INV);   //remove near white pixels
     threshold(sans_frame, sans_frame, 5, 0, THRESH_TOZERO);         //near black pixels as well
