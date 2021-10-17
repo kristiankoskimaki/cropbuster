@@ -2,11 +2,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
+    QTableWidget *table = ui->images_table;
+    table->insertColumn(0);
+    table->setHorizontalHeaderLabels( QStringList( "Images" ));
 }
 
 MainWindow::~MainWindow()
@@ -66,4 +67,21 @@ void MainWindow::find_images_with_borders() {
 
 void MainWindow::add_image_with_borders(Pic *add_me) {
     images_with_borders << add_me;
+
+    QTableWidget *table = ui->images_table;
+    table->insertRow ( table->rowCount() );
+    table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem( add_me->filename ));
 }
+
+void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
+{
+    Q_UNUSED(previous);
+    if(images_with_borders.empty())
+        return;
+
+    QImage image;
+    image.load(images_with_borders.at(current->row())->filename);
+    QLabel *label = ui->img_label;
+    label->setPixmap(QPixmap::fromImage(image).scaled(label->width(), label->height(), Qt::KeepAspectRatio));
+}
+

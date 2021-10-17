@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTableWidgetItem>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,6 +25,7 @@ private slots:
     void add_images_from(QDir &dir);
     void find_images_with_borders();
     void add_image_with_borders(Pic *add_me);
+    void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
 
 private:
     Ui::MainWindow *ui;
