@@ -15,35 +15,36 @@ void Pic::run()
 
 bool Pic::findFrame() {
     using namespace cv;
+    Mat gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
+    if (!gray_image.dims) return false;         //could not open image, eg. special character in filename
 
-    Mat clear_image, sans_frame, gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
-    if(!gray_image.dims)
-        return false;
+    threshold(gray_image, gray_image, 230, 0, THRESH_TOZERO_INV);   //make dark/bright pixels (border?) solid black
+    threshold(gray_image, gray_image, 25, 0, THRESH_TOZERO);        //this makes finding presumptive border easier
 
-    threshold(gray_image, sans_frame, 249, 0, THRESH_TOZERO_INV);   //remove near white pixels
-    threshold(sans_frame, sans_frame, 5, 0, THRESH_TOZERO);         //near black pixels as well
-    if( countNonZero(sans_frame) / double(sans_frame.rows * sans_frame.cols) > 0.9)
-        return false;           //image has no border since there are too few black/white pixels
+    int largest_area = 0;
+    std::vector<Point> largest_contour;
+    std::vector<std::vector<Point>> contours;
+    findContours(gray_image, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);     //find contours (shapes in image)
 
-    GaussianBlur(gray_image, gray_image, Size(5, 5), 0, 0);         //fewer complex contours after blurring a bit
-    threshold(gray_image, clear_image, 150, 255, THRESH_BINARY);    //remove dark pixels to find contours better
+    for (const auto& contour : contours) {
+        std::vector<Point> vertices;
+        approxPolyDP(contour, vertices, arcLength(contour, true) * 0.01, true);
+        if (vertices.size() != 4) continue;         //not a rectangle, ignore this contour
 
-    std::vector<std::vector<Point>> contours;       //find biggest contour in image (=picture inside frame)
-    findContours(clear_image, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    int largest_area = 0, largest_contour = 0;
-
-    for( uint i = 0; i < contours.size(); i++ ) {   //iterate through each contour
-        double area = contourArea( contours[i] );   //find the area of contour
-        if( area > largest_area ) {
+        const double& area = contourArea(contour);  //looking for the largest rectangle in image
+        if (area > largest_area) {
             largest_area = area;
-            largest_contour = i;                    //store the index of largest contour
+            largest_contour = contour;
         }
     }
 
-    if(contours.empty())
-        return false;
-    Rect bounding_rect = boundingRect(contours[largest_contour]);
-    origin.setX(bounding_rect.x); size.setHeight(bounding_rect.height);
-    origin.setY(bounding_rect.y); size.setWidth(bounding_rect.width);
+    const double& image_to_border_ratio = double(largest_area) / gray_image.total();
+    if (image_to_border_ratio < 0.10 || image_to_border_ratio > 0.90)
+        return false;   //too small: only minor detail detected, too large: there is no border
+
+    const Rect& bounding_rect = boundingRect(largest_contour);
+    origin.setX(bounding_rect.x); size.setHeight(bounding_rect.height - 1);
+    origin.setY(bounding_rect.y); size.setWidth(bounding_rect.width - 1);
+
     return true;
 }
