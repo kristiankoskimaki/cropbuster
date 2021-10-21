@@ -39,7 +39,7 @@ bool Pic::findFrame() {
     }
 
     const double& image_to_border_ratio = double(largest_area) / gray_image.total();
-    if (image_to_border_ratio < 0.10 || image_to_border_ratio > 0.90)
+    if (image_to_border_ratio < 0.15 || image_to_border_ratio > 0.85)
         return false;   //too small: only minor detail detected, too large: there is no border
 
     const Rect& bounding_rect = boundingRect(largest_contour);
