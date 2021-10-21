@@ -21,8 +21,6 @@ void MainWindow::on_folders_box_returnPressed() {
 
 void MainWindow::on_scan_folders_clicked() {
     const QStringList folders = ui->folders_box->text().remove(QStringLiteral("\"")).split(QStringLiteral(";"));
-    images_found.clear();   //new search, clear old results
-
     QThreadPool pool;
 
     for(auto &directory : folders) {
@@ -58,6 +56,7 @@ void MainWindow::add_images_from(QDir &dir, QThreadPool &thread_pool) {
             thread_pool.start(picture);
             while(thread_pool.activeThreadCount() == thread_pool.maxThreadCount())
                 QApplication::processEvents();          //avoid blocking signals in event loop
+            images_found << filename;
         }
     }
 }
