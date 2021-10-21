@@ -15,7 +15,6 @@ public:
     void run();
 
     QString filename;
-    QImage thumb;
     QSize size;
     QPoint origin = {0, 0};
 
