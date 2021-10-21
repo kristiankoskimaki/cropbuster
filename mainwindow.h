@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTableWidgetItem>
 #include <QThreadPool>
+#include <QPainter>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
