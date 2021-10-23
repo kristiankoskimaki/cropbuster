@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QTableWidget *table = ui->images_table;
     table->insertColumn(0);
     table->setHorizontalHeaderLabels( QStringList( "Images" ));
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 MainWindow::~MainWindow()
