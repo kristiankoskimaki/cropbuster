@@ -21,8 +21,10 @@ public:
 
     QStringList images_found;
     QVector<Pic *> images_with_borders;
+    bool stop_scanning = false;
 
 private slots:
+    void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
     void on_folders_box_returnPressed();
     void on_scan_folders_clicked();
     void add_images_from(QDir &dir, QThreadPool &thread_pool);

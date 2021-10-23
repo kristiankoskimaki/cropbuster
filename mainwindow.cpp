@@ -57,6 +57,8 @@ void MainWindow::add_images_from(QDir &dir, QThreadPool &thread_pool) {
             QApplication::processEvents();      //avoid blocking signals in event loop
             images_found << filename;
         }
+        if(stop_scanning)
+            return;
     }
 }
 
