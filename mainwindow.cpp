@@ -54,8 +54,7 @@ void MainWindow::add_images_from(QDir &dir, QThreadPool &thread_pool) {
             Pic *picture = new Pic(this, filename);
             picture->setAutoDelete(false);
             thread_pool.start(picture);
-            while(thread_pool.activeThreadCount() == thread_pool.maxThreadCount())
-                QApplication::processEvents();          //avoid blocking signals in event loop
+            QApplication::processEvents();      //avoid blocking signals in event loop
             images_found << filename;
         }
     }
