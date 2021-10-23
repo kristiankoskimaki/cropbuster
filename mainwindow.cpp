@@ -41,7 +41,7 @@ void MainWindow::add_images_from(QDir &dir, QThreadPool &thread_pool) {
     while(iter.hasNext()) {
         const QFile file(iter.next());
         const QString filename = file.fileName();
-        ui->statusbar->showMessage(filename);
+        ui->statusbar->showMessage(QDir::toNativeSeparators(filename));
         ui->statusbar->repaint();
 
         bool duplicate = false;                 //don't add same file many times
@@ -66,7 +66,7 @@ void MainWindow::add_image_with_borders(Pic *add_me) {
 
     QTableWidget *table = ui->images_table;
     table->insertRow ( table->rowCount() );
-    table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem( add_me->filename ));
+    table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem( QDir::toNativeSeparators(add_me->filename) ));
 }
 
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
