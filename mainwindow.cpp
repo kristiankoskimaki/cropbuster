@@ -69,6 +69,9 @@ void MainWindow::add_image_with_borders(Pic *add_me) {
     QTableWidget *table = ui->images_table;
     table->insertRow ( table->rowCount() );
     table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem( QDir::toNativeSeparators(add_me->filename) ));
+
+    if(images_with_borders.size() == 1)     //first image found, show it on screen
+        table->selectRow(0);
 }
 
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
