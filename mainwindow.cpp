@@ -85,16 +85,14 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
     const double image_resize_factor = std::min( double(label->height()) / image.height(),
                                                  double(label->width()) / image.width() );
-    if(label->height() <= label->width())
-        image = image.scaledToHeight(image.height() * image_resize_factor);
-    else
-        image = image.scaledToWidth(image.width() * image_resize_factor);
 
+    image = image.scaled(label->size(), Qt::KeepAspectRatio);
     const QRect rec(images_with_borders.at(current->row())->origin * image_resize_factor,
                     images_with_borders.at(current->row())->size * image_resize_factor);
 
     QPainter painter(&image);
     painter.setPen(QPen(Qt::green, 2, Qt::DashDotLine));
     painter.drawRect(rec);
-    label->setPixmap(QPixmap::fromImage(image));
+    label->setPixmap(QPixmap::fromImage(image).scaled( QSize( label->width()-2, label->height()-2 ),
+                     Qt::KeepAspectRatio));     //label expands if painted with matching width/height pixmap
 }
