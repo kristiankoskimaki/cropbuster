@@ -96,3 +96,12 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
     label->setPixmap(QPixmap::fromImage(image).scaled( QSize( label->width()-2, label->height()-2 ),
                      Qt::KeepAspectRatio));     //label expands if painted with matching width/height pixmap
 }
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    Q_UNUSED(event)
+    if(images_with_borders.empty())
+        return;
+
+    QTableWidgetItem *selected_row = ui->images_table->selectedItems()[0];
+    on_images_table_currentItemChanged(selected_row, selected_row);
+}

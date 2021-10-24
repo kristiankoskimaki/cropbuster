@@ -30,6 +30,7 @@ private slots:
     void add_images_from(QDir &dir, QThreadPool &thread_pool);
     void add_image_with_borders(Pic *add_me);
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     Ui::MainWindow *ui;
