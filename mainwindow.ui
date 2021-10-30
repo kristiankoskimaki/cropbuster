@@ -40,7 +40,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QTableWidget" name="images_table"/>
+       <widget class="QTableWidget" name="images_table">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
