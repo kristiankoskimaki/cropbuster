@@ -3,11 +3,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-
     ui->folders_box->setFocus();
     QTableWidget *table = ui->images_table;
-    table->insertColumn(0);
-    table->setHorizontalHeaderLabels( QStringList( "Images" ));
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 

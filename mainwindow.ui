@@ -47,6 +47,14 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="columnCount">
+         <number>1</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>Images</string>
+         </property>
+        </column>
        </widget>
       </item>
      </layout>
