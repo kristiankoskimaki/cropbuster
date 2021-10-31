@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() { };
 
     QStringList images_found;
     QVector<Pic *> images_with_borders;
@@ -25,7 +25,7 @@ public:
 
 private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
-    void on_folders_box_returnPressed();
+    void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();
     void add_images_from(QDir &dir, QThreadPool &thread_pool);
     void add_image_with_borders(Pic *add_me);

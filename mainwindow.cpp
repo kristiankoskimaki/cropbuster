@@ -11,15 +11,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::on_folders_box_returnPressed() {
-    ui->scan_folders->click();
-}
-
 void MainWindow::on_scan_folders_clicked() {
     const QStringList folders = ui->folders_box->text().remove(QStringLiteral("\"")).split(QStringLiteral(";"));
     QThreadPool pool;
