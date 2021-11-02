@@ -9,51 +9,65 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 }
 
 void MainWindow::on_scan_folders_clicked() {
-    const QStringList folders = ui->folders_box->text().remove(QStringLiteral("\"")).split(QStringLiteral(";"));
-    QThreadPool pool;
+    QString not_found, typed_folders = ui->folders_box->text().remove(QRegularExpression("\"|^ *| +$|\\*\\.?j?p?e?g?$"));
+    QStringList fixed_folders;                              //remove quotes, leading and trailing space, .jpg extension
 
-    for(auto &directory : folders) {
-        QDir dir = directory;
-        if(dir.isEmpty())
+    for (auto &folder : typed_folders.split(QStringLiteral(";"))) {
+        QFileInfo file = QFileInfo(folder);
+        const QString filename = file.fileName();
+        const QString path = file.absoluteFilePath();
+
+        if (filename == QStringLiteral("") ||                               //"c:" is read as "c:/[a root folder]"
+            filename.at(filename.size()-1) != '/' )                         //"d:" is ok, as is "c:/" (bug?)
+            file = QFileInfo(folder + QStringLiteral("/"));
+        if (folder == QStringLiteral("") || folder == QStringLiteral(":"))
             continue;
-        if(dir.exists())
-            add_images_from(dir, pool);
+        if (file.absolutePath() == QDir::currentPath() || !QFileInfo::exists(path)) {
+            not_found = not_found + folder + QStringLiteral("  ");
+            continue;
+        }
+
+        bool add_this = true;                                //eliminate duplicate folders in list
+        for (int i=fixed_folders.size()-1; i>=0; i--) {
+            if (path.indexOf(fixed_folders.at(i)) == 0) {    //duplicate OR parent already added
+                add_this = false;
+                continue;
+            }
+            if (fixed_folders.at(i).indexOf(path) == 0)      //subfolder found in list, delete it
+                fixed_folders.remove(i);
+        }
+        if (add_this)
+            fixed_folders << path;
     }
-    pool.waitForDone();
-    QApplication::processEvents();              //process signals from last threads
-    ui->statusbar->clearMessage();
+
+    if(not_found != QStringLiteral(""))
+        not_found = QStringLiteral("Can't find ") + not_found;
+    search_for_images(fixed_folders, not_found);
 }
 
-void MainWindow::add_images_from(QDir &dir, QThreadPool &thread_pool) {
-    dir.setNameFilters(QStringList( { "*.jpg", "*.jpeg" } ));
-    QDirIterator iter(dir, QDirIterator::Subdirectories);
-    while(iter.hasNext()) {
-        const QFile file(iter.next());
-        const QString filename = file.fileName();
-        ui->statusbar->showMessage(QDir::toNativeSeparators(filename));
-        ui->statusbar->repaint();
+void MainWindow::search_for_images(const QStringList &folders, const QString &not_found) {
+    QThreadPool pool;
 
-        bool duplicate = false;                 //don't add same file many times
-        for(const auto &alreadyAddedFile : images_found)
-            if(filename.toLower() == alreadyAddedFile.toLower()) {
-                duplicate = true;
-                break;
-            }
-        if(!duplicate) {
+    for(auto &folder : folders) {
+        QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
+        while(iter.hasNext()) {
+            if(stop_scanning)
+                return;
+            const QString filename = QFile(iter.next()).fileName();
+            ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
             Pic *picture = new Pic(this, filename);
             picture->setAutoDelete(false);
-            thread_pool.start(picture);
-            QApplication::processEvents();      //avoid blocking signals in event loop
-            images_found << filename;
+            pool.start(picture);
+            QApplication::processEvents();          //avoid blocking signals in event loop
         }
-        if(stop_scanning)
-            return;
+        pool.waitForDone();
+        QApplication::processEvents();              //process signals from last threads
+        ui->statusbar->clearMessage();
     }
 }
 
 void MainWindow::add_image_with_borders(Pic *add_me) {
     images_with_borders << add_me;
-
     QTableWidget *table = ui->images_table;
     table->insertRow ( table->rowCount() );
     table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem( QDir::toNativeSeparators(add_me->filename) ));

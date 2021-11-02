@@ -27,7 +27,7 @@ private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
     void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();
-    void add_images_from(QDir &dir, QThreadPool &thread_pool);
+    void search_for_images(const QStringList &folders, const QString &not_found);
     void add_image_with_borders(Pic *add_me);
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void resizeEvent(QResizeEvent *event);
