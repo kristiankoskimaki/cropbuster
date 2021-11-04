@@ -20,7 +20,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() { };
 
-    QStringList images_found;
     QVector<Pic *> images_with_borders;
     bool stop_scanning = false;
 
