@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTableWidgetItem>
+#include <QDirIterator>
 #include <QThreadPool>
 #include <QTimer>
 #include <QPainter>

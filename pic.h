@@ -2,9 +2,10 @@
 #define PIC_H
 
 #include <opencv2/opencv.hpp>
+#include <QObject>
 #include <QRunnable>
-#include <QImage>
-#include <QDirIterator>
+#include <QSize>
+#include <QPoint>
 
 class Pic: public QObject, public QRunnable
 {

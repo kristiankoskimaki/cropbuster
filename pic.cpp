@@ -7,7 +7,7 @@ Pic::Pic(QObject *_mainwPtr, const QString &filenameParam) : filename(filenamePa
 
 void Pic::run()
 {
-    if(QFileInfo::exists(filename) && findFrame())
+    if (findFrame())
         emit add_this_image(this);
     else
         this->setAutoDelete(true);
