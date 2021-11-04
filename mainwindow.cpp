@@ -40,34 +40,34 @@ void MainWindow::on_scan_folders_clicked() {
 }
 
 void MainWindow::search_for_images(const QStringList &folders, const QString &not_found) {
-    QThreadPool pool;
+    ImageTable image_table(ui->images_table, &images_with_borders);
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, &image_table, &ImageTable::add_rows);
+    timer->start(1000);         //program is responsive if filenames are added to table at intervals
 
-    for(auto &folder : folders) {
+    ui->statusbar->showMessage(not_found);
+    QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
+
+    for (auto &folder : folders) {
         QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
-        while(iter.hasNext()) {
-            if(stop_scanning)
-                return;
+        while (iter.hasNext()) {
+            while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
+                QApplication::processEvents();                          //2. avoid blocking signals in event loop
+            if (stop_scanning) {
+                pool.clear(); return;               //stop creating threads when force quit program
+            }
             const QString filename = QFile(iter.next()).fileName();
+            Pic *picture = new Pic(this, filename); //important! many instances of same class in threadpool crashes
+            picture->setAutoDelete(false);          //(because some objects get deleted) without this (race condition)
+            pool.start(picture);                    //every instances Pic::run() is executed when free thread available
             ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
-            Pic *picture = new Pic(this, filename);
-            picture->setAutoDelete(false);
-            pool.start(picture);
-            QApplication::processEvents();          //avoid blocking signals in event loop
         }
-        pool.waitForDone();
-        QApplication::processEvents();              //process signals from last threads
-        ui->statusbar->clearMessage();
     }
-}
 
-void MainWindow::add_image_with_borders(Pic *add_me) {
-    images_with_borders << add_me;
-    QTableWidget *table = ui->images_table;
-    table->insertRow ( table->rowCount() );
-    table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem( QDir::toNativeSeparators(add_me->filename) ));
-
-    if(images_with_borders.size() == 1)     //first image found, show it on screen
-        table->selectRow(0);
+    pool.waitForDone();
+    QApplication::processEvents();              //process signals from last threads
+    image_table.add_rows();                     //ensure that remaining images are added when function ends
+    ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
@@ -103,4 +103,18 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 
     QTableWidgetItem *selected_row = ui->images_table->selectedItems()[0];
     on_images_table_currentItemChanged(selected_row, selected_row);
+}
+
+
+void ImageTable::add_rows() {
+    const int existing_rows = table->rowCount();        //add new image filenames to table
+    const int filenames_length = filenames->size();     //since last time function was last called
+
+    for (int i=existing_rows; i<filenames_length; i++) {
+        table->insertRow ( table->rowCount() );
+        table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem(
+                         QDir::toNativeSeparators(filenames->at(i)->filename) ));
+    }
+    if (filenames->size() == 1)     //show first image found on screen
+        table->selectRow(0);
 }
