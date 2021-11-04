@@ -29,7 +29,11 @@ bool Pic::findFrame() {
     for (const auto& contour : contours) {
         std::vector<Point> vertices;
         approxPolyDP(contour, vertices, arcLength(contour, true) * 0.01, true);
-        if (vertices.size() != 4) continue;         //not a rectangle, ignore this contour
+        if (vertices.size() != 4) continue;         //contour must be a straight rectangle
+        if (vertices.at(0).x != vertices.at(1).x || vertices.at(2).x != vertices.at(3).x)
+            continue;
+        if (vertices.at(0).y != vertices.at(3).y || vertices.at(1).y != vertices.at(2).y)
+            continue;
 
         const double& area = contourArea(contour);  //looking for the largest rectangle in image
         if (area > largest_area) {
