@@ -4,8 +4,6 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->folders_box->setFocus();
-    QTableWidget *table = ui->images_table;
-    table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void MainWindow::on_scan_folders_clicked() {
