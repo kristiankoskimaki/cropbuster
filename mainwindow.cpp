@@ -103,7 +103,6 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
     on_images_table_currentItemChanged(selected_row, selected_row);
 }
 
-
 void ImageTable::add_rows() {
     const int existing_rows = table->rowCount();        //add new image filenames to table
     const int filenames_length = filenames->size();     //since last time function was last called
@@ -113,6 +112,8 @@ void ImageTable::add_rows() {
         table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem(
                          QDir::toNativeSeparators(filenames->at(i)->filename) ));
     }
-    if (filenames->size() == 1)     //show first image found on screen
+    if (!existing_rows) {
         table->selectRow(0);
+        table->setFocus();
+    }
 }
