@@ -8,17 +8,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 void MainWindow::on_scan_folders_clicked() {
     QStringList fixed_folders;
-    QString not_found, typed_folders = ui->folders_box->text().replace(";:+;", ";");
-    typed_folders.remove(QRegularExpression("\"|^ *| +$|\\*\\.?j?p?e?g?$"));    //remove colon, quotes, extra space, .jpg
+    QString not_found, typed_folders = ui->folders_box->text();
+    const QRegularExpression re("\"|^ *| *$|\\*$|\\*\\.jpe?g$");        //quotes, leading/trailing space, *.jpeg
 
-    for (auto &folder : typed_folders.split(QStringLiteral(";"))) {
-        if (folder == QStringLiteral("c:") || folder == QStringLiteral("C:"))
-            folder = QStringLiteral("c:\\");                //bug? "c:" -> Qt debug folder, but "d:" -> "d:\"
-        const QString path = QFileInfo(folder).absoluteFilePath();
-        if (!QFileInfo::exists(path)) {
-            not_found = not_found + folder + QStringLiteral("  ");
+    for (const auto &typed : typed_folders.split(QStringLiteral(";"))) {
+        QString folder = typed;
+        folder.remove(re).replace(QRegularExpression(":+"), ":");       //remove double colons as well
+
+        if(folder.isEmpty())
+            continue;
+        QString path = QFileInfo(folder).absoluteFilePath();
+        if (!QFileInfo::exists(path) || path == QDir::currentPath())    //test if not found b/c no trailing slash
+            path = QFileInfo(folder + QStringLiteral("/")).absoluteFilePath();
+        if (!QFileInfo::exists(path) || path == QStringLiteral(":/")) {
+            not_found = not_found + typed + QStringLiteral("  ");
             continue;
         }
+
         bool add_this = true;                                //eliminate duplicate folders in list
         for (int i=fixed_folders.size()-1; i>=0; i--) {
             if (path.indexOf(fixed_folders.at(i)) == 0) {    //duplicate OR parent already added
