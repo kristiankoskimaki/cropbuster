@@ -19,9 +19,6 @@ public:
     QSize size;
     QPoint origin = {0, 0};
 
-private slots:
-    bool findFrame();
-
 signals:
     void add_this_image(Pic*add_me);
 };
