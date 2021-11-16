@@ -14,6 +14,7 @@ class Pic: public QObject, public QRunnable
 public:
     Pic(QObject *_mainwPtr, const QString &filenameParam);
     void run();
+    void find_exact_edges(cv::Rect &rectangle);
 
     QString filename;
     QSize size;
