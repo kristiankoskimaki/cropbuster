@@ -1,4 +1,5 @@
 #include "pic.h"
+using namespace cv;
 
 Pic::Pic(QObject *_mainwPtr, const QString &filenameParam) : filename(filenameParam)
 {
@@ -7,7 +8,6 @@ Pic::Pic(QObject *_mainwPtr, const QString &filenameParam) : filename(filenamePa
 
 void Pic::run()
 {
-    using namespace cv;
     Mat gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
     if (!gray_image.dims) {                     //could not open image, eg. special character in filename
         this->setAutoDelete(true);
@@ -42,7 +42,6 @@ void Pic::run()
 
 //thresholding image makes finding edges easier, but also distorts it: rectangle is a few pixels off
 void Pic::find_exact_edges(cv::Rect &rect) {
-    using namespace cv;
     Mat image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
 
     uchar border_color;                         //border color selected 1px outside center image...
