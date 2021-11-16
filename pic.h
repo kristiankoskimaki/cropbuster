@@ -22,6 +22,11 @@ public:
 
 signals:
     void add_this_image(Pic*add_me);
+
+private:
+    static constexpr double MAX_BORDER_PERCENT = 0.95;  //up to 95% of image can be border
+    static constexpr int    DEFAULT_DEVIATION = 30;     //don't seek more than 30px for edge
+    static constexpr int    BORDER_THRESHOLD = 35;      //border/image color difference
 };
 
 #endif // PIC_H
