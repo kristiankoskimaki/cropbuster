@@ -118,7 +118,7 @@ void ImageTable::add_rows() {
         table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem(
                          QDir::toNativeSeparators(filenames->at(i)->filename) ));
     }
-    if (!existing_rows) {
+    if (!existing_rows && table->rowCount() > 0) {
         table->selectRow(0);
         table->setFocus();
     }
