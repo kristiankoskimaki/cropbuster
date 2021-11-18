@@ -7,6 +7,7 @@
 #include <QThreadPool>
 #include <QTimer>
 #include <QPainter>
+#include <QFileDialog>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
@@ -32,6 +33,8 @@ private slots:
     void add_image_with_borders(Pic *add_me) { images_with_borders << add_me; };
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void resizeEvent(QResizeEvent *event);
+    void on_save_as_clicked();
+    void select_next_row(const int &current_row);
 
 private:
     Ui::MainWindow *ui;
