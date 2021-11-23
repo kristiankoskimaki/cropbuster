@@ -92,7 +92,7 @@ void MainWindow::draw_border_rectangle() {
                                         //label expands if painted with matching width/height pixmap
     QImage scaled_image = image.scaled( label->size() - QSize(2,2), Qt::KeepAspectRatio);
     QPainter painter(&scaled_image);
-    painter.setPen(QPen(Qt::green, 2, Qt::DashDotLine));
+    painter.setPen(QPen(Qt::green, 1, Qt::DashDotLine));
 
     /* if a 1px separator is simply drawn on the image and image is then resized to fit the label,
      * the top or bottom separator lines can disappear because those exact rows can be lost during resizing.
