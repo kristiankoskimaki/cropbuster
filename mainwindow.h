@@ -24,6 +24,8 @@ public:
 
     QVector<Pic *> images_with_borders;
     bool stop_scanning = false;
+    QImage image;
+    int image_height, image_width;
 
 private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }

@@ -81,13 +81,14 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
         return;
 
     QLabel *label = ui->img_label;                                      //color separator won't show on 8-bit images
-    QImage image = QImage(images_with_borders.at(current->row())->filename).convertToFormat(QImage::Format_RGB888);
+    image = QImage(images_with_borders.at(current->row())->filename).convertToFormat(QImage::Format_RGB888);
+    image_height = image.height(); image_width = image.width();
 
     /* if a 1px separator is simply drawn on the image and image is then resized to fit the label,
      * the top or bottom separator lines can disappear because those exact rows can be lost during resizing.
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
-    const double image_resize_factor = std::min( double(label->height()) / image.height(),
-                                                 double(label->width()) / image.width() );
+    const double image_resize_factor = std::min( double(label->height()) / image_height,
+                                                 double(label->width()) / image_width );
 
     image = image.scaled(label->size(), Qt::KeepAspectRatio);
     const QRect rec(images_with_borders.at(current->row())->origin * image_resize_factor,
