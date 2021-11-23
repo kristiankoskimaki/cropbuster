@@ -80,15 +80,15 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
     if(images_with_borders.size() <= current->row())
         return;
 
-    const Pic *pic = images_with_borders.at(current->row());
+    Pic *pic = images_with_borders.at(current->row());
     image = QImage(pic->filename).convertToFormat(QImage::Format_RGB888);   //color separator won't show on 8-bit images
     image_height = image.height(); image_width = image.width();
 
     ui->statusbar->clearMessage();
-    draw_border_rectangle(*pic);
+    draw_border_rectangle();
 }
 
-void MainWindow::draw_border_rectangle(const Pic &pic) {
+void MainWindow::draw_border_rectangle() {
     QLabel *label = ui->img_label;
                                         //label expands if painted with matching width/height pixmap
     QImage scaled_image = image.scaled( label->size() - QSize(2,2), Qt::KeepAspectRatio);
@@ -100,17 +100,10 @@ void MainWindow::draw_border_rectangle(const Pic &pic) {
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
     const double image_resize_factor = std::min( double(label->height()) / image_height,
                                                  double(label->width()) / image_width );
-    painter.drawRect(QRect(pic.origin * image_resize_factor, pic.size * image_resize_factor));
+
+    Pic *pic = images_with_borders.at(ui->images_table->currentRow());
+    painter.drawRect(QRect(pic->origin * image_resize_factor, pic->size * image_resize_factor));
     label->setPixmap(QPixmap::fromImage(scaled_image));
-}
-
-void MainWindow::resizeEvent(QResizeEvent *event) {
-    Q_UNUSED(event)
-    if(images_with_borders.empty())
-        return;
-
-    QTableWidgetItem *selected_row = ui->images_table->selectedItems()[0];
-    on_images_table_currentItemChanged(selected_row, selected_row);
 }
 
 void ImageTable::add_rows() {

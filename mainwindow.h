@@ -34,8 +34,8 @@ private slots:
     void search_for_images(const QStringList &folders, const QString &not_found);
     void add_image_with_borders(Pic *add_me) { images_with_borders << add_me; };
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
-    void draw_border_rectangle(const Pic &pic);
-    void resizeEvent(QResizeEvent *event);
+    void draw_border_rectangle();
+    void resizeEvent(QResizeEvent *event) { if(!images_with_borders.empty()) draw_border_rectangle(); Q_UNUSED(event) };
     void on_save_as_clicked();
     void select_next_row(const int &current_row);
 
