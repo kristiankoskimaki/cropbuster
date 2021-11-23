@@ -80,26 +80,28 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
     if(images_with_borders.size() <= current->row())
         return;
 
-    QLabel *label = ui->img_label;                                      //color separator won't show on 8-bit images
-    image = QImage(images_with_borders.at(current->row())->filename).convertToFormat(QImage::Format_RGB888);
+    const Pic *pic = images_with_borders.at(current->row());
+    image = QImage(pic->filename).convertToFormat(QImage::Format_RGB888);   //color separator won't show on 8-bit images
     image_height = image.height(); image_width = image.width();
+
+    ui->statusbar->clearMessage();
+    draw_border_rectangle(*pic);
+}
+
+void MainWindow::draw_border_rectangle(const Pic &pic) {
+    QLabel *label = ui->img_label;
+                                        //label expands if painted with matching width/height pixmap
+    QImage scaled_image = image.scaled( label->size() - QSize(2,2), Qt::KeepAspectRatio);
+    QPainter painter(&scaled_image);
+    painter.setPen(QPen(Qt::green, 2, Qt::DashDotLine));
 
     /* if a 1px separator is simply drawn on the image and image is then resized to fit the label,
      * the top or bottom separator lines can disappear because those exact rows can be lost during resizing.
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
     const double image_resize_factor = std::min( double(label->height()) / image_height,
                                                  double(label->width()) / image_width );
-
-    image = image.scaled(label->size(), Qt::KeepAspectRatio);
-    const QRect rec(images_with_borders.at(current->row())->origin * image_resize_factor,
-                    images_with_borders.at(current->row())->size * image_resize_factor);
-
-    QPainter painter(&image);
-    painter.setPen(QPen(Qt::green, 2, Qt::DashDotLine));
-    painter.drawRect(rec);
-    label->setPixmap(QPixmap::fromImage(image).scaled( QSize( label->width()-2, label->height()-2 ),
-                     Qt::KeepAspectRatio));     //label expands if painted with matching width/height pixmap
-    ui->statusbar->clearMessage();
+    painter.drawRect(QRect(pic.origin * image_resize_factor, pic.size * image_resize_factor));
+    label->setPixmap(QPixmap::fromImage(scaled_image));
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
