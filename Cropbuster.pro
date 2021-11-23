@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    action.cpp \
     pic.cpp
 
 HEADERS += \

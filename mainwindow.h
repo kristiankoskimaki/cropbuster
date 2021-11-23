@@ -36,6 +36,7 @@ private slots:
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void draw_border_rectangle();
     void resizeEvent(QResizeEvent *event) { if(!images_with_borders.empty()) draw_border_rectangle(); Q_UNUSED(event) };
+
     void on_save_as_clicked();
     void select_next_row(const int &current_row);
 
