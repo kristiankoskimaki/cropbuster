@@ -80,6 +80,10 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
 
     Pic *pic = images_with_borders.at(current->row());
     image = QImage(pic->filename).convertToFormat(QImage::Format_RGB888);   //color separator won't show on 8-bit images
+    if (image.isNull()) {
+        select_next_row(current->row());
+        return;
+    }
     image_height = image.height(); image_width = image.width();
 
     ui->statusbar->clearMessage();
