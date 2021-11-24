@@ -47,6 +47,10 @@ void MainWindow::select_next_row(const int &current_row) {
     else {
         ui->img_label->setPixmap(QPixmap());        //there were no other visible rows, clear image
         ui->save_as->setDisabled(true);
+        ui->grow_top->setDisabled(true);    ui->shrink_top->setDisabled(true);
+        ui->grow_bottom->setDisabled(true); ui->shrink_bottom->setDisabled(true);
+        ui->grow_left->setDisabled(true);   ui->shrink_left->setDisabled(true);
+        ui->grow_right->setDisabled(true);  ui->shrink_right->setDisabled(true);
     }
 }
 
