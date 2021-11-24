@@ -39,6 +39,14 @@ private slots:
 
     void on_save_as_clicked();
     void select_next_row(const int &current_row);
+    void on_grow_top_clicked();
+    void on_grow_bottom_clicked();
+    void on_grow_left_clicked();
+    void on_grow_right_clicked();
+    void on_shrink_top_clicked();
+    void on_shrink_bottom_clicked();
+    void on_shrink_left_clicked();
+    void on_shrink_right_clicked();
 
 private:
     Ui::MainWindow *ui;

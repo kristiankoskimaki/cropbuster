@@ -49,3 +49,101 @@ void MainWindow::select_next_row(const int &current_row) {
         ui->save_as->setDisabled(true);
     }
 }
+
+void MainWindow::on_grow_top_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    const int current_y = pic->origin.y();
+    if (current_y == 0)
+        return;
+
+    pic->origin.setY(current_y - 1);
+    pic->size.setHeight(pic->size.height() + 1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_grow_bottom_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    if (image_height - pic->size.height() <= pic->origin.y())
+        return;
+
+    pic->size.setHeight(pic->size.height() + 1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_grow_left_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    const int current_x = pic->origin.x();
+    if (current_x == 0)
+        return;
+
+    pic->origin.setX(current_x - 1);
+    pic->size.setWidth(pic->size.width() + 1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_grow_right_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    if (image_width - pic->size.width() <= pic->origin.x())
+        return;
+
+    pic->size.setWidth(pic->size.width() + 1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_shrink_top_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    const int height = pic->size.height();
+    if (height <= 1)
+        return;
+
+    pic->origin.setY(pic->origin.y() + 1);
+    pic->size.setHeight(height -1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_shrink_bottom_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    const int height = pic->size.height();
+    if (height <= 1)
+        return;
+
+    pic->size.setHeight(height -1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_shrink_left_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    const int width = pic->size.width();
+    if (width <= 1)
+        return;
+
+    pic->origin.setX(pic->origin.x() + 1);
+    pic->size.setWidth(width - 1);
+    draw_border_rectangle();
+}
+
+void MainWindow::on_shrink_right_clicked() {
+    if (!ui->images_table->rowCount())
+        return;
+    Pic* pic = images_with_borders.at(ui->images_table->currentRow());
+    const int width = pic->size.width();
+    if (width <= 1)
+        return;
+
+    pic->size.setWidth(width - 1);
+    draw_border_rectangle();
+}
