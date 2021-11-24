@@ -36,6 +36,7 @@ private slots:
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void draw_border_rectangle();
     void resizeEvent(QResizeEvent *event) { if(!images_with_borders.empty()) draw_border_rectangle(); Q_UNUSED(event) };
+    void add_rows();
 
     void on_save_as_clicked();
     void select_next_row(const int &current_row);
@@ -51,17 +52,5 @@ private slots:
 private:
     Ui::MainWindow *ui;
 };
-
-
-//using QTimer(), an instance of this class can execute add_rows() at regular intervals to populate filename table
-//event loop would be filled (=program frozen) if a new row was added every time an image with borders is found
-class ImageTable : public QMainWindow {
-public:
-    ImageTable(QTableWidget *table_ptr, QVector<Pic *>*filenames_ptr) : table(table_ptr), filenames(filenames_ptr) { };
-    QTableWidget *table;
-    QVector<Pic *> *filenames;
-    void add_rows();
-};
-
 
 #endif // MAINWINDOW_H

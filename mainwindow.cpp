@@ -43,9 +43,8 @@ void MainWindow::on_scan_folders_clicked() {
 }
 
 void MainWindow::search_for_images(const QStringList &folders, const QString &not_found) {
-    ImageTable image_table(ui->images_table, &images_with_borders);
     QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, &image_table, &ImageTable::add_rows);
+    connect(timer, &QTimer::timeout, this, &MainWindow::add_rows);
     timer->start(1000);         //program is responsive if filenames are added to table at intervals
 
     ui->statusbar->showMessage(not_found);
@@ -69,7 +68,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
 
     pool.waitForDone();
     QApplication::processEvents();              //process signals from last threads
-    image_table.add_rows();                     //ensure that remaining images are added when function ends
+    timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 
@@ -105,17 +104,20 @@ void MainWindow::draw_border_rectangle() {
     label->setPixmap(QPixmap::fromImage(scaled_image));
 }
 
-void ImageTable::add_rows() {
-    const int existing_rows = table->rowCount();        //add new image filenames to table
-    const int filenames_length = filenames->size();     //since last time function was last called
+//using QTimer() to call add_rows() at regular intervals to populate filename table. event loop
+//would otherwise fill up (=program frozen) if a new row was added every time an image with borders is found
+void MainWindow::add_rows() {
+    const int existing_rows = ui->images_table->rowCount();     //add new image filenames to table
+    const int filenames_length = images_with_borders.size();    //since last time function was called
 
-    for (int i=existing_rows; i<filenames_length; i++) {
-        table->insertRow ( table->rowCount() );
-        table->setItem ( table->rowCount()-1, 0, new QTableWidgetItem(
-                         QDir::toNativeSeparators(filenames->at(i)->filename) ));
+    for (int row=existing_rows; row<filenames_length; row++) {
+        ui->images_table->insertRow(row);
+        ui->images_table->setItem(row, 0, new QTableWidgetItem(QDir::toNativeSeparators(
+                                              images_with_borders.at(row)->filename) ));
     }
-    if (!existing_rows && table->rowCount() > 0) {
-        table->selectRow(0);
-        table->setFocus();
+
+    if (!existing_rows && filenames_length > 0) {               //focus on first filename added to list
+        ui->images_table->selectRow(0);
+        ui->images_table->setFocus();
     }
 }
