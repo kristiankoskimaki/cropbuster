@@ -85,6 +85,7 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
         return;
     }
     image_height = image.height(); image_width = image.width();
+    ui->open_in_explorer->setText(QFileInfo(pic->filename).fileName());
 
     ui->statusbar->clearMessage();
     draw_border_rectangle();

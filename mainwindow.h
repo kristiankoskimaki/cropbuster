@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QFileDialog>
+#include <QProcess>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
@@ -38,6 +39,7 @@ private slots:
     void resizeEvent(QResizeEvent *event) { if(!images_with_borders.empty()) draw_border_rectangle(); Q_UNUSED(event) };
     void add_rows();
 
+    void on_open_in_explorer_clicked();
     void on_save_as_clicked();
     void select_next_row(const int &current_row);
     void on_grow_top_clicked();
@@ -52,5 +54,16 @@ private slots:
 private:
     Ui::MainWindow *ui;
 };
-
+/*
+class ClickableLabel : public QLabel
+{
+    Q_OBJECT
+public:
+    explicit ClickableLabel(QWidget *parent) { Q_UNUSED (parent) }
+protected:
+    void mousePressEvent(QMouseEvent *event) { Q_UNUSED (event) emit clicked(); }
+signals:
+    void clicked();
+};
+*/
 #endif // MAINWINDOW_H

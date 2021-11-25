@@ -1,6 +1,22 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+void MainWindow::on_open_in_explorer_clicked() {
+    if (images_with_borders.empty())
+        return;
+    const QString filename = images_with_borders.at(ui->images_table->currentRow())->filename;
+
+    #if defined(Q_OS_WIN)
+        QProcess::startDetached(QStringLiteral("explorer"), QStringList {"/select,", QDir::toNativeSeparators(filename)});
+    #endif
+    #if defined(Q_OS_MACX)
+        QProcess::startDetached(QStringLiteral("open"), QStringList {"-R", filename});
+    #endif
+    #if defined(Q_OS_X11)
+        QProcess::startDetached(QStringLiteral("xdg-open"), QStringList {filename.left(filename.lastIndexOf("/"))});
+    #endif
+}
+
 void MainWindow::on_save_as_clicked() {
     if (!ui->images_table->rowCount())
         return;
@@ -46,6 +62,8 @@ void MainWindow::select_next_row(const int &current_row) {
         ui->images_table->selectRow(select_next_row);
     else {
         ui->img_label->setPixmap(QPixmap());        //there were no other visible rows, clear image
+        ui->open_in_explorer->clear();
+        ui->open_in_explorer->setDisabled(true);
         ui->save_as->setDisabled(true);
         ui->grow_top->setDisabled(true);    ui->shrink_top->setDisabled(true);
         ui->grow_bottom->setDisabled(true); ui->shrink_bottom->setDisabled(true);

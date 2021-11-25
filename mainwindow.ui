@@ -257,6 +257,9 @@
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <property name="rightMargin">
          <number>0</number>
         </property>
@@ -285,6 +288,25 @@
             <string>Images</string>
            </property>
           </column>
+         </widget>
+        </item>
+        <item>
+         <widget class="ClickableLabel" name="open_in_explorer" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color : blue; text-decoration : underline; margin-left : 20px;</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -413,6 +435,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickableLabel</class>
+   <extends>QWidget</extends>
+   <header>clickablelabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

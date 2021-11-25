@@ -15,6 +15,7 @@ SOURCES += \
     pic.cpp
 
 HEADERS += \
+    clickablelabel.h \
     mainwindow.h \
     pic.h
 
