@@ -91,8 +91,9 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
 
 void MainWindow::draw_border_rectangle() {
     QLabel *label = ui->img_label;
-                                        //label expands if painted with matching width/height pixmap
-    QImage scaled_image = image.scaled( label->size() - QSize(2,2), Qt::KeepAspectRatio);
+    const Pic *pic = images_with_borders.at(ui->images_table->currentRow());
+
+    QImage scaled_image = image.scaled( label->size(), Qt::KeepAspectRatio);
     QPainter painter(&scaled_image);
     painter.setPen(QPen(Qt::green, 1, Qt::DashDotLine));
 
@@ -102,8 +103,8 @@ void MainWindow::draw_border_rectangle() {
     const double image_resize_factor = std::min( double(label->height()) / image_height,
                                                  double(label->width()) / image_width );
 
-    Pic *pic = images_with_borders.at(ui->images_table->currentRow());
-    painter.drawRect(QRect(pic->origin * image_resize_factor, pic->size * image_resize_factor));
+                                                                //right + bottom extend 2 pixels for some reason
+    painter.drawRect(QRect(pic->origin * image_resize_factor, (pic->size - QSize{2,2}) * image_resize_factor));
     label->setPixmap(QPixmap::fromImage(scaled_image));
 
     ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").
