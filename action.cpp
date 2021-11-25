@@ -31,11 +31,10 @@ void MainWindow::on_save_as_clicked() {
     if (save_filename.isEmpty())
         return;
     image.save(save_filename, "JPG", ui->jpg_quality->value());
+
     if (!QFileInfo::exists(save_filename)) {
         ui->statusbar->showMessage(QStringLiteral("Error saving ") + QDir::toNativeSeparators(save_filename));
-        return;
     }
-
     select_next_row(current_row);
 }
 
