@@ -308,14 +308,14 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">color : blue; text-decoration : underline; margin-left : 20px;</string>
+           <string notr="true">color : blue; text-decoration : underline;</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="about_image">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -323,7 +323,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>100</height>
+            <height>30</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -333,7 +333,7 @@
            </size>
           </property>
           <property name="frameShape">
-           <enum>QFrame::Box</enum>
+           <enum>QFrame::NoFrame</enum>
           </property>
           <property name="text">
            <string/>

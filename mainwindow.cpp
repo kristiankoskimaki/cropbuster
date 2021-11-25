@@ -86,7 +86,6 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
     }
     image_height = image.height(); image_width = image.width();
     ui->open_in_explorer->setText(QFileInfo(pic->filename).fileName());
-
     draw_border_rectangle();
 }
 
@@ -106,6 +105,10 @@ void MainWindow::draw_border_rectangle() {
     Pic *pic = images_with_borders.at(ui->images_table->currentRow());
     painter.drawRect(QRect(pic->origin * image_resize_factor, pic->size * image_resize_factor));
     label->setPixmap(QPixmap::fromImage(scaled_image));
+
+    ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").
+                             arg(image_width).arg(image_height).
+                             arg(pic->size.width()).arg(pic->size.height()).arg(pic->origin.x()).arg(pic->origin.y()));
 }
 
 //using QTimer() to call add_rows() at regular intervals to populate filename table. event loop
