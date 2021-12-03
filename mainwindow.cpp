@@ -100,13 +100,19 @@ void MainWindow::draw_border_rectangle() {
     /* if a 1px separator is simply drawn on the image and image is then resized to fit the label,
      * the top or bottom separator lines can disappear because those exact rows can be lost during resizing.
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
-    const double image_resize_factor = std::min( double(label->height()) / image_height,
-                                                 double(label->width()) / image_width );
+    const double resize_factor = std::min( double(label->height()) / image_height,
+                                           double(label->width()) / image_width);
+    QRect selection_rect(pic->origin * resize_factor, pic->size * resize_factor);
 
-                                                                //right + bottom extend 2 pixels for some reason
-    painter.drawRect(QRect(pic->origin * image_resize_factor, (pic->size - QSize{2,2}) * image_resize_factor));
+    const int selection_width = selection_rect.width();
+    const int selection_height = selection_rect.height();
+    if (selection_width >= label->width())                  //selection must still fit inside label after resizing
+        selection_rect.setWidth(selection_width - 1);
+    if (selection_height >= label->height())
+        selection_rect.setHeight(selection_height - 1);
+
+    painter.drawRect(selection_rect);
     label->setPixmap(QPixmap::fromImage(scaled_image));
-
     ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").
                              arg(image_width).arg(image_height).
                              arg(pic->size.width()).arg(pic->size.height()).arg(pic->origin.x()).arg(pic->origin.y()));
