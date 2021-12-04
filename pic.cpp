@@ -58,48 +58,64 @@ void Pic::find_exact_edges(cv::Rect &rect) {
     for (int row=0; row<max_deviation; row++) {             //top edge
         uchar* pixel = image.ptr<uchar>(rect.y+row, rect.x);
         uchar* end = pixel + rect.width;
-        do {                                    //compare every pixel in row/column to background color
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD) {
-                rect.y += row;                  //if pixel differs enough, we found edge: adjust rect
-                rect.height -= row;
-                row = max_deviation; break;
-            }
-        } while (pixel++ < end);
+        int non_border_pixels = 0;
+        do                                  //compare every pixel in row/column to background color
+            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+                non_border_pixels++;
+        while (pixel++ < end);
+
+        if (non_border_pixels > NOT_A_BORDER) {
+            rect.y += row;                  //if pixels differ enough, we found edge: adjust rect
+            rect.height -= row;
+            break;
+        }
     }
 
     for (int row=0; row<max_deviation; row++) {             //bottom edge
         uchar* pixel = image.ptr<uchar>( rect.y + rect.height-1 - row, rect.x);
         uchar* end = pixel + rect.width;
-        do {
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD) {
-                rect.height -= row;
-                row = max_deviation; break;
-            }
-        } while (pixel++ < end);
+        int non_border_pixels = 0;
+        do
+            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+                non_border_pixels++;
+        while (pixel++ < end);
+
+        if (non_border_pixels > NOT_A_BORDER) {
+            rect.height -= row;
+            break;
+        }
     }
 
     for (int col=0; col<max_deviation; col++) {             //left edge
         uchar* pixel = image.ptr<uchar>(rect.y, rect.x + col);
         uchar* end = image.ptr<uchar>( rect.y + rect.height-1, rect.x + col);
+        int non_border_pixels = 0;
         do {
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD) {
-                rect.x += col;
-                rect.width -= col;
-                col = max_deviation; break;
-            }
+            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+                non_border_pixels++;
             pixel += image.cols;
         } while (pixel < end);
+
+        if (non_border_pixels > NOT_A_BORDER) {
+            rect.x += col;
+            rect.width -= col;
+            break;
+        }
     }
 
     for (int col=0; col<max_deviation; col++) {             //right edge
         uchar* pixel = image.ptr<uchar>( rect.y, rect.x + rect.width-1 - col);
         uchar* end = image.ptr<uchar>( rect.y + rect.height-1, rect.x + rect.width-1 - col);
+        int non_border_pixels = 0;
         do {
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD) {
-                rect.width -= col;
-                col = max_deviation; break;
-            }
+            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+                non_border_pixels++;
             pixel += image.cols;
         } while (pixel < end);
+
+        if (non_border_pixels > NOT_A_BORDER) {
+            rect.width -= col;
+            break;
+        }
     }
 }
