@@ -3,6 +3,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->folders_box->setFocus();
+    ui->progress_bar->setVisible(false);
 }
 
 void MainWindow::on_scan_folders_clicked() {
@@ -47,28 +48,41 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     connect(timer, &QTimer::timeout, this, &MainWindow::add_rows);
     timer->start(1000);         //program is responsive if filenames are added to table at intervals
 
-    ui->statusbar->showMessage(not_found);
-    QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
+    ui->statusbar->showMessage(QStringLiteral("Searching for images..."));
+    QApplication::processEvents();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
+    QStringList image_files;                    //iterate folders and add all jpg filenames to list
     for (auto &folder : folders) {
         QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
-        while (iter.hasNext()) {
-            while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
-                QApplication::processEvents();                          //2. avoid blocking signals in event loop
-            if (stop_scanning) {
-                pool.clear(); return;               //stop creating threads when force quit program
-            }
-            const QString filename = QFile(iter.next()).fileName();
-            Pic *picture = new Pic(this, filename); //important! many instances of same class in threadpool crashes
-            picture->setAutoDelete(false);          //(because some objects get deleted) without this (race condition)
-            pool.start(picture);                    //every instances Pic::run() is executed when free thread available
-            ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
+        while (iter.hasNext())
+            image_files << QFile(iter.next()).fileName();
+    }
+
+    QApplication::restoreOverrideCursor();
+    ui->progress_bar->setMaximum(image_files.size());
+    ui->progress_bar->setVisible(true);
+    ui->statusbar->showMessage(not_found);
+
+    QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
+    for (auto &image : image_files) {
+        while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
+            QApplication::processEvents();                          //2. avoid blocking signals in event loop
+        if (stop_scanning) {
+            pool.clear(); return;               //stop creating threads when force quit program
         }
+        const QString filename = QFile(image).fileName();
+        Pic *picture = new Pic(this, filename); //important! many instances of same class in threadpool crashes
+        picture->setAutoDelete(false);          //(because some objects get deleted) without this (race condition)
+        pool.start(picture);                    //every instances Pic::run() is executed when free thread available
+        ui->progress_bar->setValue(ui->progress_bar->value() + 1);
+        ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
     }
 
     pool.waitForDone();
     QApplication::processEvents();              //process signals from last threads
     timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
+    ui->progress_bar->setVisible(false);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 
