@@ -116,16 +116,15 @@ void MainWindow::draw_border_rectangle() {
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
     const double resize_factor = std::min( double(label->height()) / image_height,
                                            double(label->width()) / image_width);
-    QRect selection_rect(pic->origin * resize_factor, pic->size * resize_factor);
 
-    const int selection_width = selection_rect.width();
-    const int selection_height = selection_rect.height();
-    if (selection_width >= label->width())                  //selection must still fit inside label after resizing
-        selection_rect.setWidth(selection_width - 1);
-    if (selection_height >= label->height())
-        selection_rect.setHeight(selection_height - 1);
+    const int sel_x =          qFloor( resize_factor * pic->origin.x()    );
+    const int sel_y =          qFloor( resize_factor * pic->origin.y()    );
+    const int sel_w = std::min(qFloor( resize_factor * pic->size.width()  ),
+                                       scaled_image.width() - sel_x - 1   );
+    const int sel_h = std::min(qFloor( resize_factor * pic->size.height() ),
+                                       scaled_image.height() - sel_y - 1  );
 
-    painter.drawRect(selection_rect);
+    painter.drawRect(QRect( QPoint(sel_x, sel_y), QSize(sel_w, sel_h) ));
     label->setPixmap(QPixmap::fromImage(scaled_image));
     ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").
                              arg(image_width).arg(image_height).
