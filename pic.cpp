@@ -9,8 +9,8 @@ Pic::Pic(QObject *_mainwPtr, const QString &filenameParam) : filename(filenamePa
 void Pic::run()
 {
     Mat gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
-    if (!gray_image.dims) {                     //could not open image, eg. special character in filename
-        this->setAutoDelete(true);
+    if (!gray_image.dims || gray_image.cols * gray_image.rows > 33177600) {
+        this->setAutoDelete(true);                      //special character in filename or >8K (too big for QImage)
         return;
     }
 
