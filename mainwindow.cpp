@@ -40,50 +40,64 @@ void MainWindow::on_scan_folders_clicked() {
 
     if(not_found != QStringLiteral(""))
         not_found = QStringLiteral("Can't find ") + not_found;
+    ui->statusbar->showMessage(not_found);
+
     search_for_images(fixed_folders, not_found);
 }
 
 void MainWindow::search_for_images(const QStringList &folders, const QString &not_found) {
+    //to set the progress bar max value, search through folders for all jpgs in background thread
+    QFuture<void> future = QtConcurrent::run(&MainWindow::get_progressbar_max, this, folders);
+
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::add_rows);
     timer->start(1000);         //program is responsive if filenames are added to table at intervals
 
-    ui->statusbar->showMessage(QStringLiteral("Searching for images..."));
-    QApplication::processEvents();
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    QStringList image_files;                    //iterate folders and add all jpg filenames to list
+    QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
     for (auto &folder : folders) {
         QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
-        while (iter.hasNext())
-            image_files << QFile(iter.next()).fileName();
-    }
-
-    QApplication::restoreOverrideCursor();
-    ui->progress_bar->setMaximum(image_files.size());
-    ui->progress_bar->setVisible(true);
-    ui->statusbar->showMessage(not_found);
-
-    QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
-    for (auto &image : image_files) {
-        while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
-            QApplication::processEvents();                          //2. avoid blocking signals in event loop
-        if (stop_scanning) {
-            pool.clear(); return;               //stop creating threads when force quit program
+        while (iter.hasNext()) {
+            while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
+                QApplication::processEvents();                          //2. avoid blocking signals in event loop
+            if (stop_scanning) {
+                pool.clear(); return;               //stop creating threads when force quit program
+            }
+            const QString filename = QFile(iter.next()).fileName();
+            Pic *picture = new Pic(this, filename); //important! many instances of same class in threadpool crashes
+            picture->setAutoDelete(false);          //(because some objects get deleted) without this (race condition)
+            pool.start(picture);                    //every instances Pic::run() is executed when free thread available
+            ui->progress_bar->setValue(ui->progress_bar->value() + 1);
+            ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
         }
-        const QString filename = QFile(image).fileName();
-        Pic *picture = new Pic(this, filename); //important! many instances of same class in threadpool crashes
-        picture->setAutoDelete(false);          //(because some objects get deleted) without this (race condition)
-        pool.start(picture);                    //every instances Pic::run() is executed when free thread available
-        ui->progress_bar->setValue(ui->progress_bar->value() + 1);
-        ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
     }
 
     pool.waitForDone();
     QApplication::processEvents();              //process signals from last threads
     timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
+    future.waitForFinished();                   //wait until finished (crash when going out of scope destroys instance)
     ui->progress_bar->setVisible(false);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
+}
+
+void MainWindow::get_progressbar_max(const QStringList &folders) {
+    int files_found = 0;
+    for (auto &folder : folders) {
+        QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
+        while (iter.hasNext()) {
+            files_found++;
+            iter.next();
+        }
+    }
+
+    //this function is running in another thread and should not modify gui widgets by itself
+    //instead, emit signal to a function in the main gui thread to do that
+    QObject::connect(this, SIGNAL(show_progressbar(int)), this, SLOT(set_progressbar_max(int)));
+    emit show_progressbar(files_found);
+}
+
+void MainWindow::set_progressbar_max(const int &max) {
+    ui->progress_bar->setMaximum(max);
+    ui->progress_bar->setVisible(true);
 }
 
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)

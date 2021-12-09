@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QProcess>
+#include <QtConcurrent/QtConcurrent>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
@@ -33,6 +34,8 @@ private slots:
     void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();
     void search_for_images(const QStringList &folders, const QString &not_found);
+    void get_progressbar_max(const QStringList &folders);
+    void set_progressbar_max(const int &max);
     void add_image_with_borders(Pic *add_me) { images_with_borders << add_me; };
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void draw_border_rectangle();
@@ -50,6 +53,9 @@ private slots:
     void on_shrink_bottom_clicked();
     void on_shrink_left_clicked();
     void on_shrink_right_clicked();
+
+signals:
+    void show_progressbar(int maxvalue);
 
 private:
     Ui::MainWindow *ui;
