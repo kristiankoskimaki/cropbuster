@@ -31,10 +31,15 @@ public:
     QImage image;
     int image_height, image_width;
 
+    static constexpr bool ONLY_BLACK_BORDER = true;
+    static constexpr bool ANY_BORDER = false;
+    bool border_preference = ONLY_BLACK_BORDER;
+
 private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
     void dragEnterEvent(QDragEnterEvent *event) { if(event->mimeData()->hasUrls()) event->acceptProposedAction(); }
     void dropEvent(QDropEvent *event);
+    void on_border_color_pref_clicked();
     void on_browse_folders_clicked();
     void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();

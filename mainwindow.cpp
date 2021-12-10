@@ -7,6 +7,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->browse_folders->setIcon(ui->browse_folders->style()->standardIcon(QStyle::SP_DirOpenIcon));
 }
 
+void MainWindow::on_border_color_pref_clicked() {
+    if (ui->border_color_pref->checkState() == Qt::Checked)
+        border_preference = ONLY_BLACK_BORDER;
+    else if (ui->border_color_pref->checkState() == Qt::Unchecked)
+        border_preference = ANY_BORDER;
+}
+
 void MainWindow::dropEvent(QDropEvent *event) {
     const QString file_name = event->mimeData()->urls().first().toLocalFile();
     const QFileInfo file(file_name);
@@ -22,6 +29,7 @@ void MainWindow::on_browse_folders_clicked() {
     ui->folders_box->insert(QStringLiteral(";%1").arg(QDir::toNativeSeparators(dir)));
     ui->folders_box->setFocus();
 }
+
 void MainWindow::on_scan_folders_clicked() {
     QStringList fixed_folders;
     QString not_found, typed_folders = ui->folders_box->text();
@@ -58,6 +66,7 @@ void MainWindow::on_scan_folders_clicked() {
         not_found = QStringLiteral("Can't find ") + not_found;
     ui->statusbar->showMessage(not_found);
     ui->scan_folders->setDisabled(true);
+    ui->border_color_pref->setDisabled(true);
 
     search_for_images(fixed_folders, not_found);
 }
@@ -80,8 +89,9 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
                 pool.clear(); return;               //stop creating threads when force quit program
             }
             const QString filename = QFile(iter.next()).fileName();
-            Pic *picture = new Pic(this, filename); //important! many instances of same class in threadpool crashes
-            picture->setAutoDelete(false);          //(because some objects get deleted) without this (race condition)
+            Pic *picture = new Pic(this, filename, border_preference);
+            picture->setAutoDelete(false);          //important! many instances of same class in threadpool crashes
+                                                    //(because some objects get deleted) without this (race condition)
             pool.start(picture);                    //every instances Pic::run() is executed when free thread available
             ui->progress_bar->setValue(ui->progress_bar->value() + 1);
             ui->statusbar->showMessage(not_found + QDir::toNativeSeparators(filename));
@@ -94,6 +104,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     future.waitForFinished();                   //wait until finished (crash when going out of scope destroys instance)
     ui->progress_bar->setVisible(false);
     ui->scan_folders->setDisabled(false);
+    ui->border_color_pref->setDisabled(false);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 

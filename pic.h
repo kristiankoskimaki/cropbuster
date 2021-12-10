@@ -12,7 +12,7 @@ class Pic: public QObject, public QRunnable
     Q_OBJECT
 
 public:
-    Pic(QObject *_mainwPtr, const QString &filenameParam);
+    Pic(QObject *_mainwPtr, const QString &filenameParam, const bool &border_pref);
     void run();
     bool find_border_color(cv::Mat image, uchar &border_color);
     int most_frequent_array_color(QVector<uchar> &pixels, uchar &border_color);
@@ -21,6 +21,7 @@ public:
     QString filename;
     QSize size;
     QPoint origin = {0, 0};
+    bool border_preference;
 
 signals:
     void add_this_image(Pic*add_me);

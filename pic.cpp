@@ -1,8 +1,8 @@
 #include "pic.h"
 using namespace cv;
 
-Pic::Pic(QObject *_mainwPtr, const QString &filenameParam) : filename(filenameParam)
-{
+Pic::Pic(QObject *_mainwPtr, const QString &filenameParam, const bool &border_pref) :
+                             filename(filenameParam), border_preference(border_pref) {
     QObject::connect(this, SIGNAL(add_this_image(Pic*)), _mainwPtr, SLOT(add_image_with_borders(Pic*)));
 }
 
@@ -15,7 +15,7 @@ void Pic::run()
     }
 
     uchar border_color = 0;
-    if (!ONLY_BLACK_BORDER) {
+    if (border_preference != ONLY_BLACK_BORDER) {
         if (!find_border_color(gray_image, border_color)) {
             this->setAutoDelete(true);
             return;
@@ -114,7 +114,7 @@ void Pic::find_exact_edges(cv::Rect &rect, uchar &border_color) {
     Mat image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
     const int max_deviation = min( min(rect.width/2, rect.height/2), DEFAULT_DEVIATION);
 
-    if (ONLY_BLACK_BORDER) {                //border color selected 1px outside center image...
+    if (border_preference == ONLY_BLACK_BORDER) {           //border color selected 1px outside center image...
         if (rect.y > 0)
             border_color = *image.ptr<uchar>(rect.y-1, rect.x);                 //...from border on top
         else if (rect.x > 0)
