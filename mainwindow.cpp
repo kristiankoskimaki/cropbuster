@@ -4,6 +4,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     ui->folders_box->setFocus();
     ui->progress_bar->setVisible(false);
+    ui->browse_folders->setIcon(ui->browse_folders->style()->standardIcon(QStyle::SP_DirOpenIcon));
 }
 
 void MainWindow::dropEvent(QDropEvent *event) {
@@ -13,6 +14,14 @@ void MainWindow::dropEvent(QDropEvent *event) {
         ui->folders_box->insert(QStringLiteral(";%1").arg(QDir::toNativeSeparators(file_name)));
 }
 
+void MainWindow::on_browse_folders_clicked() {
+    const QString dir = QFileDialog::getExistingDirectory(nullptr, QByteArrayLiteral("Open folder"), QStringLiteral("/"),
+                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if(dir.isEmpty())
+        return;
+    ui->folders_box->insert(QStringLiteral(";%1").arg(QDir::toNativeSeparators(dir)));
+    ui->folders_box->setFocus();
+}
 void MainWindow::on_scan_folders_clicked() {
     QStringList fixed_folders;
     QString not_found, typed_folders = ui->folders_box->text();
