@@ -90,6 +90,8 @@ void MainWindow::get_progressbar_max(const QStringList &folders) {
             iter.next();
         }
     }
+    if (!files_found)
+        return;
 
     //this function is running in another thread and should not modify gui widgets by itself
     //instead, emit signal to a function in the main gui thread to do that
