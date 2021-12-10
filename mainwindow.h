@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDragEnterEvent>
+#include <QMimeData>
 #include <QTableWidgetItem>
 #include <QDirIterator>
 #include <QThreadPool>
@@ -31,6 +33,8 @@ public:
 
 private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
+    void dragEnterEvent(QDragEnterEvent *event) { if(event->mimeData()->hasUrls()) event->acceptProposedAction(); }
+    void dropEvent(QDropEvent *event);
     void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();
     void search_for_images(const QStringList &folders, const QString &not_found);

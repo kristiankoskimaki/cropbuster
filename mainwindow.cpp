@@ -6,6 +6,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->progress_bar->setVisible(false);
 }
 
+void MainWindow::dropEvent(QDropEvent *event) {
+    const QString file_name = event->mimeData()->urls().first().toLocalFile();
+    const QFileInfo file(file_name);
+    if(file.isDir())
+        ui->folders_box->insert(QStringLiteral(";%1").arg(QDir::toNativeSeparators(file_name)));
+}
+
 void MainWindow::on_scan_folders_clicked() {
     QStringList fixed_folders;
     QString not_found, typed_folders = ui->folders_box->text();
