@@ -41,6 +41,7 @@ void MainWindow::on_scan_folders_clicked() {
     if(not_found != QStringLiteral(""))
         not_found = QStringLiteral("Can't find ") + not_found;
     ui->statusbar->showMessage(not_found);
+    ui->scan_folders->setDisabled(true);
 
     search_for_images(fixed_folders, not_found);
 }
@@ -76,6 +77,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
     future.waitForFinished();                   //wait until finished (crash when going out of scope destroys instance)
     ui->progress_bar->setVisible(false);
+    ui->scan_folders->setDisabled(false);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 
