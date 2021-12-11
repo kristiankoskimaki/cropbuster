@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include <QMessageBox>
 #include <QTableWidgetItem>
 #include <QDirIterator>
 #include <QThreadPool>

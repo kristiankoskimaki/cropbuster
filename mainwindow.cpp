@@ -31,6 +31,17 @@ void MainWindow::on_browse_folders_clicked() {
 }
 
 void MainWindow::on_scan_folders_clicked() {
+    if(!images_with_borders.empty()) {
+        if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Rescan", "Discard results and search again?",
+                                QMessageBox::Yes|QMessageBox::No).exec()) {
+            ui->images_table->setRowCount(0);
+            images_with_borders.clear();
+            ui->img_label->clear();
+        }
+        else
+            return;
+    }
+
     QStringList fixed_folders;
     QString not_found, typed_folders = ui->folders_box->text();
     const QRegularExpression re("\"|^ *| *$|\\*$|\\*\\.jpe?g$");        //quotes, leading/trailing space, *.jpeg
@@ -134,7 +145,7 @@ void MainWindow::set_progressbar_max(const int &max) {
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
     Q_UNUSED(previous);
-    if(images_with_borders.size() <= current->row())
+    if(!current || images_with_borders.size() <= current->row())
         return;
 
     Pic *pic = images_with_borders.at(current->row());
