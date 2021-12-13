@@ -8,11 +8,12 @@ Pic::Pic(QObject *_mainwPtr, const QString &filenameParam, const bool &border_pr
 
 void Pic::run()
 {
-    Mat gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
-    if (!gray_image.dims || gray_image.cols * gray_image.rows > 33177600) {
+    Mat gray_image_original, gray_image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
+    if (gray_image.total() == 0 || gray_image.total() > 33177600) {
         this->setAutoDelete(true);                      //special character in filename or >8K (too big for QImage)
         return;
     }
+    gray_image.copyTo(gray_image_original);
 
     uchar border_color = 0;
     if (border_preference != ONLY_BLACK_BORDER) {
@@ -50,7 +51,7 @@ void Pic::run()
         return;
     }
 
-    find_exact_edges(largest_rect, border_color);
+    find_exact_edges(gray_image_original, largest_rect, border_color);
     origin.setX(largest_rect.x); size.setHeight(largest_rect.height);
     origin.setY(largest_rect.y); size.setWidth(largest_rect.width);
     emit add_this_image(this);
@@ -58,7 +59,7 @@ void Pic::run()
 
 //find most common color (likely the border color) from outside edge pixels
 //return true if image has border (enough pixels of the same color found), otherwise return false
-bool Pic::find_border_color(Mat image, uchar &border_color) {
+bool Pic::find_border_color(Mat &image, uchar &border_color) {
     const uchar *topright = image.data + image.cols;
     const uchar *bottomleft = image.ptr(image.rows - 1);
     const uchar *toprow  = image.data; const uchar *bottomrow = bottomleft;
@@ -110,8 +111,7 @@ int Pic::most_frequent_array_color(QVector<uchar> &pixels, uchar &border_color) 
 }
 
 //thresholding image makes finding edges easier, but also distorts it: rectangle is a few pixels off
-void Pic::find_exact_edges(cv::Rect &rect, uchar &border_color) {
-    Mat image = imread(filename.toLocal8Bit().toStdString(), IMREAD_GRAYSCALE);
+void Pic::find_exact_edges(Mat &image, Rect &rect, uchar &border_color) {
     const int max_deviation = min( min(rect.width/2, rect.height/2), DEFAULT_DEVIATION);
 
     if (border_preference == ONLY_BLACK_BORDER) {           //border color selected 1px outside center image...

@@ -14,9 +14,9 @@ class Pic: public QObject, public QRunnable
 public:
     Pic(QObject *_mainwPtr, const QString &filenameParam, const bool &border_pref);
     void run();
-    bool find_border_color(cv::Mat image, uchar &border_color);
+    bool find_border_color(cv::Mat &image, uchar &border_color);
     int most_frequent_array_color(QVector<uchar> &pixels, uchar &border_color);
-    void find_exact_edges(cv::Rect &rectangle, uchar &border_color);
+    void find_exact_edges(cv::Mat &image, cv::Rect &rectangle, uchar &border_color);
 
     QString filename;
     QSize size;
