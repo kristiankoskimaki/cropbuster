@@ -5,6 +5,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->folders_box->setFocus();
     ui->progress_bar->setVisible(false);
     ui->browse_folders->setIcon(ui->browse_folders->style()->standardIcon(QStyle::SP_DirOpenIcon));
+    ui->thread_limiter->setMaximum(QThread::idealThreadCount());
+    ui->thread_limiter->setValue(QThread::idealThreadCount());
 }
 
 void MainWindow::on_border_color_pref_clicked() {
@@ -78,6 +80,7 @@ void MainWindow::on_scan_folders_clicked() {
     ui->statusbar->showMessage(not_found);
     ui->scan_folders->setDisabled(true);
     ui->border_color_pref->setDisabled(true);
+    ui->thread_limiter->setDisabled(true);
 
     search_for_images(fixed_folders, not_found);
 }
@@ -91,6 +94,8 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     timer->start(1000);         //program is responsive if filenames are added to table at intervals
 
     QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
+    pool.setMaxThreadCount(ui->thread_limiter->value());
+
     for (auto &folder : folders) {
         QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
         while (iter.hasNext()) {
@@ -116,6 +121,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     ui->progress_bar->setVisible(false);
     ui->scan_folders->setDisabled(false);
     ui->border_color_pref->setDisabled(false);
+    ui->thread_limiter->setDisabled(false);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 
