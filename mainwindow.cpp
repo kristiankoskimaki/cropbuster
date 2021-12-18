@@ -160,7 +160,6 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
         return;
     }
     image_height = image.height(); image_width = image.width();
-    ui->open_in_explorer->setText(QFileInfo(pic->filename).fileName());
     draw_border_rectangle();
 }
 
@@ -196,6 +195,7 @@ void MainWindow::draw_border_rectangle() {
     label->setPixmap(QPixmap::fromImage(scaled_image));
     ui->scrollArea->setWidget(label);
 
+    ui->open_in_explorer->setText(QFileInfo(pic->filename).fileName());
     ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").
                              arg(image_width).arg(image_height).
                              arg(pic->size.width()).arg(pic->size.height()).arg(pic->origin.x()).arg(pic->origin.y()));
