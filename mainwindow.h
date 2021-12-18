@@ -41,7 +41,6 @@ private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
     void dragEnterEvent(QDragEnterEvent *event) { if(event->mimeData()->hasUrls()) event->acceptProposedAction(); }
     void dropEvent(QDropEvent *event);
-    void on_border_color_pref_clicked();
     void on_browse_folders_clicked();
     void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();
@@ -54,6 +53,7 @@ private slots:
     void resizeEvent(QResizeEvent *event) { draw_border_rectangle(); Q_UNUSED(event) };
     void add_rows();
 
+    void on_border_color_pref_clicked();
     void on_open_in_explorer_clicked();
     void on_save_as_clicked();
     void select_next_row(const int &current_row);

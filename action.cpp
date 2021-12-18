@@ -1,6 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+void MainWindow::on_border_color_pref_clicked() {
+    if (ui->border_color_pref->checkState() == Qt::Checked)
+        border_preference = ONLY_BLACK_BORDER;
+    else if (ui->border_color_pref->checkState() == Qt::Unchecked)
+        border_preference = ANY_BORDER;
+}
+
 void MainWindow::on_open_in_explorer_clicked() {
     if (images_with_borders.empty())
         return;

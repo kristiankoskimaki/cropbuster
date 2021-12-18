@@ -8,13 +8,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->thread_limiter->setValue(QThread::idealThreadCount());
 }
 
-void MainWindow::on_border_color_pref_clicked() {
-    if (ui->border_color_pref->checkState() == Qt::Checked)
-        border_preference = ONLY_BLACK_BORDER;
-    else if (ui->border_color_pref->checkState() == Qt::Unchecked)
-        border_preference = ANY_BORDER;
-}
-
 void MainWindow::dropEvent(QDropEvent *event) {
     const QString file_name = event->mimeData()->urls().first().toLocalFile();
     const QFileInfo file(file_name);
