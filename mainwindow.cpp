@@ -3,7 +3,6 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->folders_box->setFocus();
-    ui->progress_bar->setVisible(false);
     ui->browse_folders->setIcon(ui->browse_folders->style()->standardIcon(QStyle::SP_DirOpenIcon));
     ui->thread_limiter->setMaximum(QThread::idealThreadCount());
     ui->thread_limiter->setValue(QThread::idealThreadCount());
@@ -81,6 +80,7 @@ void MainWindow::on_scan_folders_clicked() {
     ui->scan_folders->setDisabled(true);
     ui->border_color_pref->setDisabled(true);
     ui->thread_limiter->setDisabled(true);
+    ui->progress_bar->setValue(0);
 
     search_for_images(fixed_folders, not_found);
 }
@@ -118,7 +118,6 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     QApplication::processEvents();              //process signals from last threads
     timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
     future.waitForFinished();                   //wait until finished (crash when going out of scope destroys instance)
-    ui->progress_bar->setVisible(false);
     ui->scan_folders->setDisabled(false);
     ui->border_color_pref->setDisabled(false);
     ui->thread_limiter->setDisabled(false);
@@ -146,7 +145,6 @@ void MainWindow::get_progressbar_max(const QStringList &folders) {
 
 void MainWindow::set_progressbar_max(const int &max) {
     ui->progress_bar->setMaximum(max);
-    ui->progress_bar->setVisible(true);
 }
 
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
