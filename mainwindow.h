@@ -29,6 +29,7 @@ public:
 
     QVector<Pic *> images_with_borders;
     bool stop_scanning = false;
+    bool show_scaled_image = true;
     QImage image;
     int image_height, image_width;
 
@@ -50,7 +51,7 @@ private slots:
     void add_image_with_borders(Pic *add_me) { images_with_borders << add_me; };
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void draw_border_rectangle();
-    void resizeEvent(QResizeEvent *event) { if(!images_with_borders.empty()) draw_border_rectangle(); Q_UNUSED(event) };
+    void resizeEvent(QResizeEvent *event) { draw_border_rectangle(); Q_UNUSED(event) };
     void add_rows();
 
     void on_open_in_explorer_clicked();
@@ -64,6 +65,7 @@ private slots:
     void on_shrink_bottom_clicked();
     void on_shrink_left_clicked();
     void on_shrink_right_clicked();
+    void on_zoom_clicked() { show_scaled_image = show_scaled_image == true? false : true; draw_border_rectangle(); };
 
 signals:
     void show_progressbar(int maxvalue);

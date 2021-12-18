@@ -34,29 +34,55 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <item row="2" column="2">
-         <widget class="QLabel" name="img_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="3" column="2">
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAsNeeded</enum>
           </property>
-          <property name="minimumSize">
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAsNeeded</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>446</width>
+             <height>416</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item row="5" column="2" alignment="Qt::AlignHCenter">
+         <widget class="QPushButton" name="shrink_bottom">
+          <property name="maximumSize">
            <size>
-            <width>1</width>
-            <height>1</height>
+            <width>16</width>
+            <height>16</height>
            </size>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="text">
-           <string/>
+           <string>▲</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeatInterval">
+           <number>10</number>
           </property>
          </widget>
         </item>
-        <item row="0" column="2" alignment="Qt::AlignHCenter">
+        <item row="1" column="2" alignment="Qt::AlignHCenter">
          <widget class="QPushButton" name="grow_top">
           <property name="maximumSize">
            <size>
@@ -81,8 +107,8 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="shrink_left">
+        <item row="3" column="4">
+         <widget class="QPushButton" name="shrink_right">
           <property name="maximumSize">
            <size>
             <width>16</width>
@@ -96,7 +122,7 @@
            </font>
           </property>
           <property name="text">
-           <string>▶</string>
+           <string>◀</string>
           </property>
           <property name="autoRepeat">
            <bool>true</bool>
@@ -106,32 +132,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="2" alignment="Qt::AlignHCenter">
-         <widget class="QPushButton" name="grow_bottom">
-          <property name="maximumSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>▼</string>
-          </property>
-          <property name="autoRepeat">
-           <bool>true</bool>
-          </property>
-          <property name="autoRepeatInterval">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2" alignment="Qt::AlignHCenter">
+        <item row="2" column="2" alignment="Qt::AlignHCenter">
          <widget class="QPushButton" name="shrink_top">
           <property name="maximumSize">
            <size>
@@ -156,7 +157,32 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="1">
+         <widget class="QPushButton" name="shrink_left">
+          <property name="maximumSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>▶</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeatInterval">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
          <widget class="QPushButton" name="grow_left">
           <property name="maximumSize">
            <size>
@@ -187,57 +213,7 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="2" alignment="Qt::AlignHCenter">
-         <widget class="QPushButton" name="shrink_bottom">
-          <property name="maximumSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>▲</string>
-          </property>
-          <property name="autoRepeat">
-           <bool>true</bool>
-          </property>
-          <property name="autoRepeatInterval">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QPushButton" name="shrink_right">
-          <property name="maximumSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>◀</string>
-          </property>
-          <property name="autoRepeat">
-           <bool>true</bool>
-          </property>
-          <property name="autoRepeatInterval">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="4">
+        <item row="3" column="5">
          <widget class="QPushButton" name="grow_right">
           <property name="maximumSize">
            <size>
@@ -259,6 +235,47 @@
           </property>
           <property name="autoRepeatInterval">
            <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2" alignment="Qt::AlignHCenter">
+         <widget class="QPushButton" name="grow_bottom">
+          <property name="maximumSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>▼</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeatInterval">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="zoom">
+          <property name="maximumSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-weight: bold;</string>
+          </property>
+          <property name="text">
+           <string>🔍</string>
           </property>
          </widget>
         </item>

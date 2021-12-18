@@ -60,7 +60,6 @@ void MainWindow::select_next_row(const int &current_row) {
     if (select_next_row != -1)
         ui->images_table->selectRow(select_next_row);
     else {
-        ui->img_label->setPixmap(QPixmap());        //there were no other visible rows, clear image
         ui->open_in_explorer->clear();
         ui->open_in_explorer->setDisabled(true);
         ui->save_as->setDisabled(true);
@@ -68,6 +67,8 @@ void MainWindow::select_next_row(const int &current_row) {
         ui->grow_bottom->setDisabled(true); ui->shrink_bottom->setDisabled(true);
         ui->grow_left->setDisabled(true);   ui->shrink_left->setDisabled(true);
         ui->grow_right->setDisabled(true);  ui->shrink_right->setDisabled(true);
+        ui->zoom->setDisabled(true);
+        ui->scrollArea->setWidget(new QLabel);
     }
 }
 

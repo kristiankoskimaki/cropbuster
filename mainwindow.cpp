@@ -38,7 +38,7 @@ void MainWindow::on_scan_folders_clicked() {
                                 QMessageBox::Yes|QMessageBox::No).exec()) {
             ui->images_table->setRowCount(0);
             images_with_borders.clear();
-            ui->img_label->clear();
+            ui->scrollArea->setWidget(new QLabel);
         }
         else
             return;
@@ -122,6 +122,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     ui->scan_folders->setDisabled(false);
     ui->border_color_pref->setDisabled(false);
     ui->thread_limiter->setDisabled(false);
+    ui->zoom->setDisabled(false);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 
@@ -166,18 +167,22 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
 }
 
 void MainWindow::draw_border_rectangle() {
-    QLabel *label = ui->img_label;
+    if(images_with_borders.empty())
+        return;
+
     const Pic *pic = images_with_borders.at(ui->images_table->currentRow());
+    QImage scaled_image = image;
+    const QSize size_on_screen = ui->scrollArea->maximumViewportSize();
 
-    QImage scaled_image = image.scaled( label->size(), Qt::KeepAspectRatio);
-    QPainter painter(&scaled_image);
-    painter.setPen(QPen(Qt::green, 1, Qt::DashDotLine));
-
+    double resize_factor = 1.0;
     /* if a 1px separator is simply drawn on the image and image is then resized to fit the label,
      * the top or bottom separator lines can disappear because those exact rows can be lost during resizing.
      * therefore calculate how big image will be on screen and resize it before separator is drawn on it */
-    const double resize_factor = std::min( double(label->height()) / image_height,
-                                           double(label->width()) / image_width);
+    if (show_scaled_image == true) {
+        resize_factor = std::min( size_on_screen.height() / double(image_height),
+                                  size_on_screen.width() / double(image_width));
+        scaled_image = image.scaled(size_on_screen, Qt::KeepAspectRatio);
+    }
 
     const int sel_x =          qFloor( resize_factor * pic->origin.x()    );
     const int sel_y =          qFloor( resize_factor * pic->origin.y()    );
@@ -186,8 +191,13 @@ void MainWindow::draw_border_rectangle() {
     const int sel_h = std::min(qFloor( resize_factor * pic->size.height() ),
                                        scaled_image.height() - sel_y - 1  );
 
+    QPainter painter(&scaled_image);
+    painter.setPen(QPen(Qt::green, 1, Qt::DashDotLine));
     painter.drawRect(QRect( QPoint(sel_x, sel_y), QSize(sel_w, sel_h) ));
+    QLabel *label = new QLabel;
     label->setPixmap(QPixmap::fromImage(scaled_image));
+    ui->scrollArea->setWidget(label);
+
     ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").
                              arg(image_width).arg(image_height).
                              arg(pic->size.width()).arg(pic->size.height()).arg(pic->origin.x()).arg(pic->origin.y()));
