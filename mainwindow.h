@@ -37,10 +37,16 @@ public:
     static constexpr bool ANY_BORDER = false;
     bool border_preference = ONLY_BLACK_BORDER;
 
+    static constexpr int DEACTIVATE_WIDGETS = 0;
+    static constexpr int ACTIVATE_WIDGETS = 1;
+    static constexpr int UNPAUSE_WIDGETS = 2;
+    static constexpr int PAUSE_WIDGETS = 3;
+
 private slots:
     void closeEvent(QCloseEvent *event) { Q_UNUSED (event) stop_scanning = true; }
     void dragEnterEvent(QDragEnterEvent *event) { if(event->mimeData()->hasUrls()) event->acceptProposedAction(); }
     void dropEvent(QDropEvent *event);
+    void set_gui_state(const int &state);
     void on_browse_folders_clicked();
     void on_folders_box_returnPressed() { on_scan_folders_clicked(); }
     void on_scan_folders_clicked();

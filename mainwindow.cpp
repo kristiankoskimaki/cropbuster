@@ -15,6 +15,42 @@ void MainWindow::dropEvent(QDropEvent *event) {
         ui->folders_box->insert(QStringLiteral(";%1").arg(QDir::toNativeSeparators(file_name)));
 }
 
+void MainWindow::set_gui_state(const int &state) {
+    if (state == PAUSE_WIDGETS) {
+        ui->scan_folders->setDisabled(true);
+        ui->border_color_pref->setDisabled(true);
+        ui->thread_limiter->setDisabled(true);
+        ui->progress_bar->setValue(0);
+    }
+    if (state == UNPAUSE_WIDGETS) {
+        ui->scan_folders->setDisabled(false);
+        ui->border_color_pref->setDisabled(false);
+        ui->thread_limiter->setDisabled(false);
+        ui->zoom->setDisabled(false);
+    }
+    if (state == ACTIVATE_WIDGETS) {
+        ui->grow_top->setDisabled(false);    ui->shrink_top->setDisabled(false);
+        ui->grow_bottom->setDisabled(false); ui->shrink_bottom->setDisabled(false);
+        ui->grow_left->setDisabled(false);   ui->shrink_left->setDisabled(false);
+        ui->grow_right->setDisabled(false);  ui->shrink_right->setDisabled(false);
+        ui->save_as->setDisabled(false);
+        ui->zoom->setDisabled(false);
+        ui->scrollArea->setWidget(new QLabel);
+        ui->images_table->setRowCount(0);
+    }
+    if (state == DEACTIVATE_WIDGETS) {
+        ui->open_in_explorer->clear();
+        ui->open_in_explorer->setDisabled(true);
+        ui->grow_top->setDisabled(true);    ui->shrink_top->setDisabled(true);
+        ui->grow_bottom->setDisabled(true); ui->shrink_bottom->setDisabled(true);
+        ui->grow_left->setDisabled(true);   ui->shrink_left->setDisabled(true);
+        ui->grow_right->setDisabled(true);  ui->shrink_right->setDisabled(true);
+        ui->save_as->setDisabled(true);
+        ui->zoom->setDisabled(true);
+        ui->scrollArea->setWidget(new QLabel);
+    }
+}
+
 void MainWindow::on_browse_folders_clicked() {
     const QString dir = QFileDialog::getExistingDirectory(nullptr, QByteArrayLiteral("Open folder"), QStringLiteral("/"),
                         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -28,9 +64,8 @@ void MainWindow::on_scan_folders_clicked() {
     if(!images_with_borders.empty()) {
         if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Rescan", "Discard results and search again?",
                                 QMessageBox::Yes|QMessageBox::No).exec()) {
-            ui->images_table->setRowCount(0);
             images_with_borders.clear();
-            ui->scrollArea->setWidget(new QLabel);
+            set_gui_state(ACTIVATE_WIDGETS);
         }
         else
             return;
@@ -70,11 +105,8 @@ void MainWindow::on_scan_folders_clicked() {
     if(not_found != QStringLiteral(""))
         not_found = QStringLiteral("Can't find ") + not_found;
     ui->statusbar->showMessage(not_found);
-    ui->scan_folders->setDisabled(true);
-    ui->border_color_pref->setDisabled(true);
-    ui->thread_limiter->setDisabled(true);
-    ui->progress_bar->setValue(0);
 
+    set_gui_state(PAUSE_WIDGETS);
     search_for_images(fixed_folders, not_found);
 }
 
@@ -111,10 +143,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     QApplication::processEvents();              //process signals from last threads
     timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
     future.waitForFinished();                   //wait until finished (crash when going out of scope destroys instance)
-    ui->scan_folders->setDisabled(false);
-    ui->border_color_pref->setDisabled(false);
-    ui->thread_limiter->setDisabled(false);
-    ui->zoom->setDisabled(false);
+    set_gui_state(UNPAUSE_WIDGETS);
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
 }
 

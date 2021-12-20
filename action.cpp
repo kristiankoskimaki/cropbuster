@@ -66,17 +66,8 @@ void MainWindow::select_next_row(const int &current_row) {
 
     if (select_next_row != -1)
         ui->images_table->selectRow(select_next_row);
-    else {
-        ui->open_in_explorer->clear();
-        ui->open_in_explorer->setDisabled(true);
-        ui->save_as->setDisabled(true);
-        ui->grow_top->setDisabled(true);    ui->shrink_top->setDisabled(true);
-        ui->grow_bottom->setDisabled(true); ui->shrink_bottom->setDisabled(true);
-        ui->grow_left->setDisabled(true);   ui->shrink_left->setDisabled(true);
-        ui->grow_right->setDisabled(true);  ui->shrink_right->setDisabled(true);
-        ui->zoom->setDisabled(true);
-        ui->scrollArea->setWidget(new QLabel);
-    }
+    else
+        set_gui_state(DEACTIVATE_WIDGETS);
 }
 
 void MainWindow::on_grow_top_clicked() {
