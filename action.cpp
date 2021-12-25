@@ -46,27 +46,17 @@ void MainWindow::on_save_as_clicked() {
 }
 
 void MainWindow::select_next_row(const int &current_row) {
-    ui->images_table->setRowHidden(current_row, true);
-
-    int select_next_row = -1;                       //find next visible row
-    for (int i=current_row; i<ui->images_table->rowCount(); i++) {
-        if (!ui->images_table->isRowHidden(i)) {
-            select_next_row = i;
-            break;
-        }
-    }                                               //none found, find previous visible row
-    if (select_next_row == -1) {
-        for (int i=current_row; i>=0; i--) {
-            if (!ui->images_table->isRowHidden(i)) {
-                select_next_row = i;
-                break;
-            }
-        }
-    }
-
-    if (select_next_row != -1)
-        ui->images_table->selectRow(select_next_row);
+    int next_row = 0;
+    if (current_row < ui->images_table->rowCount())
+        next_row = current_row + 1;
     else
+        next_row = current_row - 1;
+
+    ui->images_table->selectRow(next_row);
+    images_with_borders.removeAt(current_row);
+    ui->images_table->removeRow(current_row);
+
+    if (ui->images_table->rowCount() == 0)
         set_gui_state(DEACTIVATE_WIDGETS);
 }
 

@@ -70,13 +70,12 @@ void MainWindow::on_browse_folders_clicked() {
 void MainWindow::on_scan_folders_clicked() {
     if(!images_with_borders.empty()) {
         if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Rescan", "Discard results and search again?",
-                                QMessageBox::Yes|QMessageBox::No).exec()) {
+                                QMessageBox::Yes|QMessageBox::No).exec())
             images_with_borders.clear();
-            set_gui_state(ACTIVATE_WIDGETS);
-        }
         else
             return;
     }
+    set_gui_state(ACTIVATE_WIDGETS);
 
     QStringList fixed_folders;
     QString not_found, typed_folders = ui->folders_box->text();
