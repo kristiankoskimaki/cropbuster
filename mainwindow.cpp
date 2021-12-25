@@ -6,6 +6,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->browse_folders->setIcon(ui->browse_folders->style()->standardIcon(QStyle::SP_DirOpenIcon));
     ui->thread_limiter->setMaximum(QThread::idealThreadCount());
     ui->thread_limiter->setValue(QThread::idealThreadCount());
+
+    //every time [vert/hor]ScrollBar is moved, copy the new position to mainWindow's [vert/hor]_scrollbar_pos member variable
+    connect( ui->scrollArea->verticalScrollBar(), &QScrollBar::valueChanged, [this](int pos) {
+             vertical_scrollbar_pos = double(pos) / ui->scrollArea->verticalScrollBar()->maximum(); } );
+    connect( ui->scrollArea->horizontalScrollBar(), &QScrollBar::valueChanged, [this](int pos) {
+             horizontal_scrollbar_pos = double(pos) / ui->scrollArea->horizontalScrollBar()->maximum(); } );
+
 }
 
 void MainWindow::dropEvent(QDropEvent *event) {
@@ -182,6 +189,7 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
         return;
     }
     image_height = image.height(); image_width = image.width();
+    vertical_scrollbar_pos = 0.0; horizontal_scrollbar_pos = 0.0;           //reset scrollbars when the image changes
     draw_border_rectangle();
 }
 
@@ -215,7 +223,15 @@ void MainWindow::draw_border_rectangle() {
     painter.drawRect(QRect( QPoint(sel_x, sel_y), QSize(sel_w, sel_h) ));
     QLabel *label = new QLabel;
     label->setPixmap(QPixmap::fromImage(scaled_image));
+
+    //every time the selection rectangle is resized, the image is redrawn with the new rectangle on top of it.
+    //when the image is redrawn though, the scrollbars reset to upper left corner, i.e. [0,0] position.
+    //unless fixed, you would have to manually scroll back every time after you clicked a resizing button
+    const double hscroll = horizontal_scrollbar_pos;   //must copy values now, since setWidget() will scroll back to
+    const double vscroll = vertical_scrollbar_pos;     //upper left corner, changing xxx_scrollbar_pos to 0
     ui->scrollArea->setWidget(label);
+    ui->scrollArea->verticalScrollBar()->setValue(vscroll * ui->scrollArea->verticalScrollBar()->maximum());
+    ui->scrollArea->horizontalScrollBar()->setValue(hscroll * ui->scrollArea->horizontalScrollBar()->maximum());
 
     ui->open_in_explorer->setText(QFileInfo(pic->filename).fileName());
     ui->about_image->setText(QStringLiteral("Image: %1 x %2\nSelection: %3 x %4 at (%5, %6)").

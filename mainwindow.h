@@ -13,6 +13,7 @@
 #include <QFileDialog>
 #include <QProcess>
 #include <QtConcurrent/QtConcurrent>
+#include <QScrollBar>
 #include "pic.h"
 
 QT_BEGIN_NAMESPACE
@@ -32,6 +33,8 @@ public:
     bool show_scaled_image = true;
     QImage image;
     int image_height, image_width;
+    double vertical_scrollbar_pos = 0.0;
+    double horizontal_scrollbar_pos = 0.0;
 
     static constexpr bool ONLY_BLACK_BORDER = true;
     static constexpr bool ANY_BORDER = false;
