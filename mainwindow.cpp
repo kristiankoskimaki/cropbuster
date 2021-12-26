@@ -36,6 +36,7 @@ void MainWindow::set_gui_state(const int &state) {
         ui->zoom->setDisabled(false);
     }
     if (state == ACTIVATE_WIDGETS) {
+        ui->open_in_explorer->setDisabled(false);
         ui->grow_top->setDisabled(false);    ui->shrink_top->setDisabled(false);
         ui->grow_bottom->setDisabled(false); ui->shrink_bottom->setDisabled(false);
         ui->grow_left->setDisabled(false);   ui->shrink_left->setDisabled(false);
@@ -46,6 +47,7 @@ void MainWindow::set_gui_state(const int &state) {
         ui->images_table->setRowCount(0);
     }
     if (state == DEACTIVATE_WIDGETS) {
+        ui->about_image->clear();
         ui->open_in_explorer->clear();
         ui->open_in_explorer->setDisabled(true);
         ui->grow_top->setDisabled(true);    ui->shrink_top->setDisabled(true);
