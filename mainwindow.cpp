@@ -152,7 +152,10 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     timer->stop(); delete timer; add_rows();    //ensure that remaining images are added when function ends
     future.waitForFinished();                   //wait until finished (crash when going out of scope destroys instance)
     set_gui_state(UNPAUSE_WIDGETS);
+
     ui->statusbar->showMessage(not_found);      //shows not found message or clears statusbar if no errors
+    if (not_found.isEmpty() && images_with_borders.isEmpty())
+        ui->statusbar->showMessage(QStringLiteral("No image files found"));
 }
 
 void MainWindow::get_progressbar_max(const QStringList &folders) {
