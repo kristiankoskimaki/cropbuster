@@ -46,18 +46,18 @@ void MainWindow::on_save_as_clicked() {
 }
 
 void MainWindow::select_next_row(const int &current_row) {
-    int next_row = 0;
-    if (current_row < ui->images_table->rowCount())
-        next_row = current_row + 1;
-    else
-        next_row = current_row - 1;
+    if (images_with_borders.count() > 1) {
+        if (current_row == ui->images_table->rowCount())    //last row is currently selected, select previous row
+            ui->images_table->selectRow(current_row - 1);
+        else
+            ui->images_table->selectRow(current_row + 1);   //there are rows below this one, select next row
 
-    ui->images_table->selectRow(next_row);
+    }
+    else
+        set_gui_state(DEACTIVATE_WIDGETS);                  //deactivate buttons since there are no images left in list
+
     images_with_borders.removeAt(current_row);
     ui->images_table->removeRow(current_row);
-
-    if (ui->images_table->rowCount() == 0)
-        set_gui_state(DEACTIVATE_WIDGETS);
 }
 
 void MainWindow::on_grow_top_clicked() {
