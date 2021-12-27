@@ -3,15 +3,10 @@
 
 #include <QMainWindow>
 #include <QDragEnterEvent>
-#include <QMimeData>
 #include <QMessageBox>
 #include <QTableWidgetItem>
-#include <QDirIterator>
-#include <QThreadPool>
-#include <QTimer>
 #include <QPainter>
 #include <QFileDialog>
-#include <QProcess>
 #include <QtConcurrent/QtConcurrent>
 #include <QScrollBar>
 #include "pic.h"
