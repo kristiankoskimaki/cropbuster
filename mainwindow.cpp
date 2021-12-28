@@ -24,14 +24,12 @@ void MainWindow::dropEvent(QDropEvent *event) {
 
 void MainWindow::set_gui_state(const int &state) {
     if (state == PAUSE_WIDGETS) {
-        ui->scan_folders->setDisabled(true);
         ui->border_color_pref->setDisabled(true);
         ui->thread_limiter->setDisabled(true);
         ui->progress_bar->setValue(0);
         ui->progress_bar->setMaximum(INT_MAX);
     }
     if (state == UNPAUSE_WIDGETS) {
-        ui->scan_folders->setDisabled(false);
         ui->border_color_pref->setDisabled(false);
         ui->thread_limiter->setDisabled(false);
         ui->zoom->setDisabled(false);
