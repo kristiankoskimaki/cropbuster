@@ -13,41 +13,41 @@ void Pic::run()
         this->setAutoDelete(true);                      //special character in filename or >8K (too big for QImage)
         return;
     }
-    gray_image.copyTo(gray_image_original);
+    gray_image.copyTo(gray_image_original);             //thresholding modifies image, make copy for reading exact pixels later
 
     uchar border_color = 0;
     if (border_preference != ONLY_BLACK_BORDER) {
-        if (!find_border_color(gray_image, border_color)) {
+        if (!find_border_color(gray_image, border_color)) {                     //disregard images without a border
             this->setAutoDelete(true);
             return;
-        }
-        uchar *pixel = gray_image.data;
-        while (pixel++ < gray_image.dataend - 1) {       //turn pixels either black (border) or white (everything else)
-            if (*pixel == border_color)
+        }                                               //image must be simplified to pure black/white in order for opencv
+        uchar *pixel = gray_image.data;                 //to easily find correct border and its position. two methods are used:
+        while (pixel++ < gray_image.dataend - 1) {      //arbitrary border color: turn all pixels with the border color to black,
+            if (*pixel == border_color)                 //and all other pixels to white
                 *pixel = 0;
             else
                 *pixel = 255;
         }
     }
-    else
-        threshold(gray_image, gray_image, 0, 255, THRESH_BINARY);               //2 colors only, all details removed
+    else                                                                //for black border detection only: use algorithm to turn
+        threshold(gray_image, gray_image, 0, 255, THRESH_BINARY);       //dark pixels pure black and bright pixels pure white
 
     int largest_area = 0;
     Rect largest_rect;
     std::vector<std::vector<Point>> contours;
-    findContours(gray_image, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);     //find shapes in image
+    findContours(gray_image, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);     //find contours (shapes) in image
 
     for (const auto& contour : contours) {
-        const Rect bounding_rect = boundingRect(contour);
+        const Rect bounding_rect = boundingRect(contour);                       //examine rectangles surrounding contour edge points
         const int area = bounding_rect.width * bounding_rect.height;
-        if (area > largest_area) {                                              //find largest rectangle
+        if (area > largest_area) {                                              //find largest rectangle (should be the border)
             largest_area = area;
             largest_rect = bounding_rect;
         }
     }
 
-    if (double(largest_area) / gray_image.total() > MAX_BORDER_PERCENT) {       //no border in image
-        this->setAutoDelete(true);
+    if (double(largest_area) / gray_image.total() > MAX_BORDER_PERCENT) {       //if there is no border in image, then the largest
+        this->setAutoDelete(true);                                              //detected shape will be the image itself. disregard
         return;
     }
 
