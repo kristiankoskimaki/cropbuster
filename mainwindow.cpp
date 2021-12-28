@@ -28,6 +28,7 @@ void MainWindow::set_gui_state(const int &state) {
         ui->border_color_pref->setDisabled(true);
         ui->thread_limiter->setDisabled(true);
         ui->progress_bar->setValue(0);
+        ui->progress_bar->setMaximum(INT_MAX);
     }
     if (state == UNPAUSE_WIDGETS) {
         ui->scan_folders->setDisabled(false);
