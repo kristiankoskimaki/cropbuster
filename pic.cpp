@@ -1,9 +1,8 @@
 #include "pic.h"
 using namespace cv;
 
-Pic::Pic(QObject *_mainwPtr, const QString &filenameParam, const bool &border_pref) :
-                             filename(filenameParam), border_preference(border_pref) {
-    QObject::connect(this, SIGNAL(add_this_image(Pic*)), _mainwPtr, SLOT(add_image_with_borders(Pic*)));
+Pic::Pic(const QString &filenameParam, const Prefs &prefsParam) : filename(filenameParam), prefs(prefsParam) {
+    QObject::connect(this, SIGNAL(add_this_image(Pic*)), prefs.mainw_ptr, SLOT(add_image_with_borders(Pic*)));
 }
 
 void Pic::run()
@@ -16,7 +15,7 @@ void Pic::run()
     gray_image.copyTo(gray_image_original);             //thresholding modifies image, make copy for reading exact pixels later
 
     uchar border_color = 0;
-    if (border_preference != ONLY_BLACK_BORDER) {
+    if (prefs.BORDER_SETTING != ONLY_BLACK_BORDER) {
         if (!find_border_color(gray_image, border_color)) {                     //disregard images without a border
             this->setAutoDelete(true);
             return;
@@ -46,7 +45,7 @@ void Pic::run()
         }
     }
 
-    if (double(largest_area) / gray_image.total() > MAX_BORDER_PERCENT) {       //if there is no border in image, then the largest
+    if (double(largest_area) / gray_image.total() > prefs.MAX_BORDER_PERCENT) { //if there is no border in image, then the largest
         this->setAutoDelete(true);                                              //detected shape will be the image itself. disregard
         return;
     }
@@ -65,7 +64,7 @@ bool Pic::find_border_color(Mat &image, uchar &border_color) {
     const uchar *toprow  = image.data; const uchar *bottomrow = bottomleft;
     const uchar *leftcol = image.data; const uchar *rightcol = topright;
 
-    const int skip_pixels = SKIP_EDGE_PIXELS;
+    const int skip_pixels = prefs.SKIP_EDGE_PIXELS;
     QVector<uchar> pixels(0);
     while (toprow < topright) {                 //copy pixels from top and bottom row
         pixels << *toprow;
@@ -81,7 +80,7 @@ bool Pic::find_border_color(Mat &image, uchar &border_color) {
     }
 
     int max_count = most_frequent_array_color(pixels, border_color);
-    if (max_count / double(pixels.size()) < EDGE_BORDER_RATIO)
+    if (max_count / double(pixels.size()) < prefs.EDGE_BORDER_RATIO)
         return false;
     return true;
 }
@@ -112,9 +111,9 @@ int Pic::most_frequent_array_color(QVector<uchar> &pixels, uchar &border_color) 
 
 //thresholding image makes finding edges easier, but also distorts it: rectangle is a few pixels off
 void Pic::find_exact_edges(Mat &image, Rect &rect, uchar &border_color) {
-    const int max_deviation = min( min(rect.width/2, rect.height/2), DEFAULT_DEVIATION);
+    const int max_deviation = min( min(rect.width/2, rect.height/2), prefs.DEFAULT_DEVIATION);
 
-    if (border_preference == ONLY_BLACK_BORDER) {           //border color selected 1px outside center image...
+    if (prefs.BORDER_SETTING == ONLY_BLACK_BORDER) {     //border color selected 1px outside center image...
         if (rect.y > 0)
             border_color = *image.ptr<uchar>(rect.y-1, rect.x);                 //...from border on top
         else if (rect.x > 0)
@@ -130,11 +129,11 @@ void Pic::find_exact_edges(Mat &image, Rect &rect, uchar &border_color) {
         uchar* end = pixel + rect.width;
         int non_border_pixels = 0;
         do                                  //compare every pixel in row/column to background color
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+            if ( abs( *pixel - border_color) > prefs.BORDER_THRESHOLD)
                 non_border_pixels++;
         while (pixel++ < end);
 
-        if (non_border_pixels > NOT_A_BORDER) {
+        if (non_border_pixels > prefs.NOT_A_BORDER) {
             rect.y += row;                  //if pixels differ enough, we found edge: adjust rect
             rect.height -= row;
             break;
@@ -146,11 +145,11 @@ void Pic::find_exact_edges(Mat &image, Rect &rect, uchar &border_color) {
         uchar* end = pixel + rect.width;
         int non_border_pixels = 0;
         do
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+            if ( abs( *pixel - border_color) > prefs.BORDER_THRESHOLD)
                 non_border_pixels++;
         while (pixel++ < end);
 
-        if (non_border_pixels > NOT_A_BORDER) {
+        if (non_border_pixels > prefs.NOT_A_BORDER) {
             rect.height -= row;
             break;
         }
@@ -161,12 +160,12 @@ void Pic::find_exact_edges(Mat &image, Rect &rect, uchar &border_color) {
         uchar* end = image.ptr<uchar>( rect.y + rect.height-1, rect.x + col);
         int non_border_pixels = 0;
         do {
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+            if ( abs( *pixel - border_color) > prefs.BORDER_THRESHOLD)
                 non_border_pixels++;
             pixel += image.cols;
         } while (pixel < end);
 
-        if (non_border_pixels > NOT_A_BORDER) {
+        if (non_border_pixels > prefs.NOT_A_BORDER) {
             rect.x += col;
             rect.width -= col;
             break;
@@ -178,12 +177,12 @@ void Pic::find_exact_edges(Mat &image, Rect &rect, uchar &border_color) {
         uchar* end = image.ptr<uchar>( rect.y + rect.height-1, rect.x + rect.width-1 - col);
         int non_border_pixels = 0;
         do {
-            if ( abs( *pixel - border_color) > BORDER_THRESHOLD)
+            if ( abs( *pixel - border_color) > prefs.BORDER_THRESHOLD)
                 non_border_pixels++;
             pixel += image.cols;
         } while (pixel < end);
 
-        if (non_border_pixels > NOT_A_BORDER) {
+        if (non_border_pixels > prefs.NOT_A_BORDER) {
             rect.width -= col;
             break;
         }

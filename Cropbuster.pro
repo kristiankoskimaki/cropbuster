@@ -19,7 +19,8 @@ SOURCES += \
 HEADERS += \
     clickablelabel.h \
     mainwindow.h \
-    pic.h
+    pic.h \
+    prefs.h
 
 FORMS += \
     mainwindow.ui

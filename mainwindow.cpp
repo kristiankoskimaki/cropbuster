@@ -125,6 +125,9 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     connect(timer, &QTimer::timeout, this, &MainWindow::add_rows);
     timer->start(1000);         //program is responsive if filenames are added to table at intervals
 
+    Prefs prefs(this);
+    prefs.BORDER_SETTING = border_preference;
+
     QThreadPool pool;           //for multithreading, create threadpool for all Pic() objects
     pool.setMaxThreadCount(ui->thread_limiter->value());
 
@@ -137,7 +140,8 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
                 pool.clear(); return;               //stop creating threads when force quit program
             }
             const QString filename = QFile(iter.next()).fileName();
-            Pic *picture = new Pic(this, filename, border_preference);
+            //Pic *picture = new Pic(this, filename, border_preference);
+            Pic *picture = new Pic(filename, prefs);
             picture->setAutoDelete(false);          //important! many instances of same class in threadpool crashes
                                                     //(because some objects get deleted) without this (race condition)
             pool.start(picture);                    //every instances Pic::run() is executed when free thread available
