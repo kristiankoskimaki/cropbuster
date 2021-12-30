@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 }
 
+//drag and drop a folder on the window to add folder name to textbox
 void MainWindow::dropEvent(QDropEvent *event) {
     const QString file_name = event->mimeData()->urls().first().toLocalFile();
     const QFileInfo file(file_name);
@@ -22,6 +23,7 @@ void MainWindow::dropEvent(QDropEvent *event) {
         ui->folders_box->insert(QStringLiteral(";%1").arg(QDir::toNativeSeparators(file_name)));
 }
 
+//disable gui buttons etc. when searching for images or all images have been removed from list. enable otherwise
 void MainWindow::set_gui_state(const int &state) {
     if (state == PAUSE_WIDGETS) {
         ui->border_color_pref->setDisabled(true);
@@ -59,6 +61,7 @@ void MainWindow::set_gui_state(const int &state) {
     }
 }
 
+//open a dialog where you can select a folder to search for images
 void MainWindow::on_browse_folders_clicked() {
     const QString dir = QFileDialog::getExistingDirectory(nullptr, QByteArrayLiteral("Open folder"), QStringLiteral("/"),
                         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -68,6 +71,7 @@ void MainWindow::on_browse_folders_clicked() {
     ui->folders_box->setFocus();
 }
 
+//parse the user selected folder names, add them to a list after removing duplicates
 void MainWindow::on_scan_folders_clicked() {
     if(!images_with_borders.empty()) {
         if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Rescan", "Discard results and search again?",
@@ -117,6 +121,12 @@ void MainWindow::on_scan_folders_clicked() {
     search_for_images(fixed_folders, not_found);
 }
 
+/* this is the important function for finding images. first, count images in folders for setting
+ * progressbar_max in the background so that cropbuster does not need to stop while doing that.
+ * add found border images to list only once a second, don't do it constantly, that freezes the ui.
+ * create a pool of available cpu threads. loop through the folders, and create a new Pic() object
+ * whenever there is a free thread available. the threads will examine their image in the background.
+ * if a image does have a border, it will send a signal, otherwise delete itself */
 void MainWindow::search_for_images(const QStringList &folders, const QString &not_found) {
     //to set the progress bar max value, search through folders for all jpgs in background thread
     QFuture<void> future = QtConcurrent::run(&MainWindow::get_progressbar_max, this, folders);
@@ -161,6 +171,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
         ui->statusbar->showMessage(QStringLiteral("No image files found"));
 }
 
+//this function is run in the background. it counts all images in the folders given
 void MainWindow::get_progressbar_max(const QStringList &folders) {
     int files_found = 0;
     for (auto &folder : folders) {
@@ -179,6 +190,7 @@ void MainWindow::get_progressbar_max(const QStringList &folders) {
     emit show_progressbar(files_found);
 }
 
+//when selecting another filename from the list in the program, load that image into memory
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
     Q_UNUSED(previous);
@@ -196,6 +208,8 @@ void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, Q
     draw_border_rectangle();
 }
 
+//draw the image and the rectangle that denotes the actual image inside the border.
+//if a large image is scaled to fit into the program, calculate the dimensions of the rectangle accordingly
 void MainWindow::draw_border_rectangle() {
     if(images_with_borders.empty())
         return;
