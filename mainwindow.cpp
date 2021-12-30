@@ -132,7 +132,7 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
     pool.setMaxThreadCount(ui->thread_limiter->value());
 
     for (auto &folder : folders) {
-        QDirIterator iter(QDir(folder, QStringLiteral("*.jp*g"), QDir::NoSort), QDirIterator::Subdirectories);
+        QDirIterator iter(QDir(folder, prefs.IMAGE_FORMATS, QDir::NoSort), QDirIterator::Subdirectories);
         while (iter.hasNext()) {
             while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
                 QApplication::processEvents();                          //2. avoid blocking signals in event loop

@@ -17,6 +17,7 @@ public:
     int    DEFAULT_DEVIATION = 30;      //don't seek more than 30px for edge
     int    BORDER_THRESHOLD = 35;       //border/image color difference
     int    NOT_A_BORDER = 4;            //differing pixels needed for row/col to not be border
+    QString IMAGE_FORMATS = "*.jp*g";   //search for this (these) image file formats
 
     Prefs(const QObject *main_window) : mainw_ptr(main_window) {
         QFile file(QStringLiteral("%1/settings.ini").arg(QApplication::applicationDirPath()));
@@ -75,6 +76,14 @@ public:
                     const int pixels = substrings.at(1).toInt();
                     if (pixels && pixels > 0 && pixels <= 32)
                         NOT_A_BORDER = pixels;
+                }
+            }
+            if (line.startsWith("IMAGE_FORMATS")) {
+                const QStringList substrings = line.split("=");
+                if (!substrings.empty() && substrings.length() == 2) {
+                    const QString formats = substrings.at(1);
+                    if (!formats.isEmpty())
+                        IMAGE_FORMATS = formats;
                 }
             }
         }
