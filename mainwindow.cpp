@@ -136,11 +136,11 @@ void MainWindow::search_for_images(const QStringList &folders, const QString &no
         while (iter.hasNext()) {
             while(pool.activeThreadCount() == pool.maxThreadCount())    //1. don't flood event loop with instances
                 QApplication::processEvents();                          //2. avoid blocking signals in event loop
-            if (stop_scanning) {
-                pool.clear(); return;               //stop creating threads when force quit program
+            if (stop_scanning) {                                        //stop creating threads when force quit program
+                pool.clear(); future.waitForFinished();
+                timer->stop(); delete timer; return;
             }
             const QString filename = QFile(iter.next()).fileName();
-            //Pic *picture = new Pic(this, filename, border_preference);
             Pic *picture = new Pic(filename, prefs);
             picture->setAutoDelete(false);          //important! many instances of same class in threadpool crashes
                                                     //(because some objects get deleted) without this (race condition)
