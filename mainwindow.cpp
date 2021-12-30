@@ -179,10 +179,6 @@ void MainWindow::get_progressbar_max(const QStringList &folders) {
     emit show_progressbar(files_found);
 }
 
-void MainWindow::set_progressbar_max(const int &max) {
-    ui->progress_bar->setMaximum(max);
-}
-
 void MainWindow::on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
     Q_UNUSED(previous);

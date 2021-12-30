@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QtConcurrent/QtConcurrent>
+#include <QProgressBar>
 #include <QScrollBar>
 #include "pic.h"
 
@@ -50,7 +51,7 @@ private slots:
     void on_scan_folders_clicked();
     void search_for_images(const QStringList &folders, const QString &not_found);
     void get_progressbar_max(const QStringList &folders);
-    void set_progressbar_max(const int &max);
+    void set_progressbar_max(const int &max) { QProgressBar *bar = findChild<QProgressBar*>("progress_bar"); if (bar) bar->setMaximum(max); };
     void add_image_with_borders(Pic *add_me) { images_with_borders << add_me; };
     void on_images_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous);
     void draw_border_rectangle();
