@@ -30,7 +30,7 @@ public:
             if(line.startsWith(QStringLiteral(";")) || line.isEmpty())
                 continue;
 
-            if (line.startsWith("SKIP_EDGE_PIXELS")) {
+            if (line.startsWith("SKIP_EDGE_PIXELS", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const int pixels = substrings.at(1).toInt();
@@ -38,7 +38,7 @@ public:
                         SKIP_EDGE_PIXELS = pixels;
                 }
             }
-            if (line.startsWith("EDGE_BORDER_RATIO")) {
+            if (line.startsWith("EDGE_BORDER_RATIO", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const double ratio = substrings.at(1).toDouble();
@@ -46,7 +46,7 @@ public:
                         EDGE_BORDER_RATIO = ratio;
                 }
             }
-            if (line.startsWith("MAX_BORDER_PERCENT")) {
+            if (line.startsWith("MAX_BORDER_PERCENT", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const double percent = substrings.at(1).toDouble();
@@ -54,7 +54,7 @@ public:
                         MAX_BORDER_PERCENT = percent;
                 }
             }
-            if (line.startsWith("DEFAULT_DEVIATION")) {
+            if (line.startsWith("DEFAULT_DEVIATION", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const int pixels = substrings.at(1).toInt();
@@ -62,7 +62,7 @@ public:
                         DEFAULT_DEVIATION = pixels;
                 }
             }
-            if (line.startsWith("BORDER_THRESHOLD")) {
+            if (line.startsWith("BORDER_THRESHOLD", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const int pixels = substrings.at(1).toInt();
@@ -70,7 +70,7 @@ public:
                         BORDER_THRESHOLD = pixels;
                 }
             }
-            if (line.startsWith("NOT_A_BORDER")) {
+            if (line.startsWith("NOT_A_BORDER", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const int pixels = substrings.at(1).toInt();
@@ -78,7 +78,7 @@ public:
                         NOT_A_BORDER = pixels;
                 }
             }
-            if (line.startsWith("IMAGE_FORMATS")) {
+            if (line.startsWith("IMAGE_FORMATS", Qt::CaseInsensitive)) {
                 const QStringList substrings = line.split("=");
                 if (!substrings.empty() && substrings.length() == 2) {
                     const QString formats = substrings.at(1);
