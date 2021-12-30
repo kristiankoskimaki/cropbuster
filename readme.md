@@ -51,7 +51,7 @@ so changing them is not necessary. You can make Cropbuster read other image form
 --->
 
 
-![](https://user-images.githubusercontent.com/46446783/147774260-7a32c1e7-5db5-4536-b993-eb367864216c.png)
+![](https://user-images.githubusercontent.com/46446783/147775356-4c885af4-14d2-45bc-a19d-d5fc36ee6572.png)
 Image with border found by Cropbuster. Top edge manually adjusted, left and bottom edges as automatically detected.
 
 
